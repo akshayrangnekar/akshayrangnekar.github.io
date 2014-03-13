@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Octopress | Akshay's Programming Blog]]></title>
   <link href="http://akshayrangnekar.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://akshayrangnekar.github.io/"/>
-  <updated>2014-03-13T14:43:16+00:00</updated>
+  <updated>2014-03-13T14:53:52+00:00</updated>
   <id>http://akshayrangnekar.github.io/</id>
   <author>
     <name><![CDATA[Akshay Rangnekar]]></name>
@@ -18,7 +18,7 @@
     <link href="http://akshayrangnekar.github.io/blog/2014/03/13/setting-up-octopress/"/>
     <updated>2014-03-13T13:22:41+00:00</updated>
     <id>http://akshayrangnekar.github.io/blog/2014/03/13/setting-up-octopress</id>
-    <content type="html"><![CDATA[<p>I&rsquo;ve been looking for a nice system to use to create blog posts as I get back in to development. I&rsquo;ve seen a couple of very ncie blogs that use <a href="http://octopress.org/">Octopress</a>, so I decided to give it a try.</p>
+    <content type="html"><![CDATA[<p><img class="left <a" src="href="http://www.gravatar.com/avatar/712764174a1641db425b971456e63015?r=x&amp;s=700">http://www.gravatar.com/avatar/712764174a1641db425b971456e63015?r=x&amp;s=700</a>" width="150" height="150" title="&lsquo;me&rsquo; &lsquo;me&rsquo;" > I&rsquo;ve been looking for a nice system to use to create blog posts as I get back in to development. I&rsquo;ve seen a couple of very ncie blogs that use <a href="http://octopress.org/">Octopress</a>, so I decided to give it a try.</p>
 
 <p>I did the setup on a my fairly new MacBook Pro, running OS X Mavericks. Was fairly easy, even with my incredibly rusty knowledge of Ruby but there were a couple of gotchas that took a little bit of <a href="http://stackoverflow.com/">Stack Overflowing</a> to figure out so I thought it may be worth writing this up as my first post using the system. With these notes, should take you less than five minutes to install and be up and running.</p>
 
@@ -290,7 +290,7 @@ google_plus_one_size: medium</p>
 
 <h1>Hidden: No visible button, just add author information to search results</h1>
 
-<p>googleplus_user: <a href="&#109;&#x61;&#105;&#x6c;&#116;&#111;&#58;&#97;&#x6b;&#115;&#x68;&#x61;&#x79;&#46;&#114;&#x61;&#x6e;&#x67;&#x6e;&#101;&#x6b;&#x61;&#x72;&#64;&#103;&#x6d;&#97;&#x69;&#x6c;&#46;&#x63;&#111;&#x6d;">&#x61;&#x6b;&#x73;&#104;&#x61;&#121;&#x2e;&#x72;&#x61;&#110;&#103;&#110;&#x65;&#x6b;&#x61;&#114;&#64;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;&#111;&#x6d;</a>
+<p>googleplus_user: <a href="&#109;&#x61;&#x69;&#108;&#116;&#111;&#58;&#x61;&#x6b;&#x73;&#104;&#x61;&#x79;&#46;&#x72;&#x61;&#x6e;&#x67;&#x6e;&#x65;&#107;&#x61;&#114;&#x40;&#103;&#x6d;&#97;&#105;&#x6c;&#46;&#99;&#111;&#x6d;">&#x61;&#107;&#115;&#x68;&#97;&#x79;&#46;&#x72;&#x61;&#110;&#x67;&#x6e;&#x65;&#107;&#97;&#114;&#x40;&#103;&#x6d;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>
 googleplus_hidden: true
 ```</p>
 

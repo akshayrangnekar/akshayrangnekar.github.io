@@ -4,7 +4,7 @@
   <title><![CDATA[Akshay's Programming Blog]]></title>
   <link href="http://akshayrangnekar.github.io/atom.xml" rel="self"/>
   <link href="http://akshayrangnekar.github.io/"/>
-  <updated>2014-03-13T14:43:16+00:00</updated>
+  <updated>2014-03-13T14:53:52+00:00</updated>
   <id>http://akshayrangnekar.github.io/</id>
   <author>
     <name><![CDATA[Akshay Rangnekar]]></name>
@@ -18,7 +18,7 @@
     <link href="http://akshayrangnekar.github.io/blog/2014/03/13/setting-up-octopress/"/>
     <updated>2014-03-13T13:22:41+00:00</updated>
     <id>http://akshayrangnekar.github.io/blog/2014/03/13/setting-up-octopress</id>
-    <content type="html"><![CDATA[<p>I&rsquo;ve been looking for a nice system to use to create blog posts as I get back in to development. I&rsquo;ve seen a couple of very ncie blogs that use <a href="http://octopress.org/">Octopress</a>, so I decided to give it a try.</p>
+    <content type="html"><![CDATA[<p><img class="left" src="http://www.gravatar.com/avatar/712764174a1641db425b971456e63015?r=x&s=700" width="150" height="150" title="me" alt="me"> I&rsquo;ve been looking for a nice system to use to create blog posts as I get back in to development. I&rsquo;ve seen a couple of very ncie blogs that use <a href="http://octopress.org/">Octopress</a>, so I decided to give it a try.</p>
 
 <p>I did the setup on a my fairly new MacBook Pro, running OS X Mavericks. Was fairly easy, even with my incredibly rusty knowledge of Ruby but there were a couple of gotchas that took a little bit of <a href="http://stackoverflow.com/">Stack Overflowing</a> to figure out so I thought it may be worth writing this up as my first post using the system. With these notes, should take you less than five minutes to install and be up and running.</p>
 
