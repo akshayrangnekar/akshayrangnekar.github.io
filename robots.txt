@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://akshayrangnekar.github.io/sitemap.xml 
