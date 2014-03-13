@@ -5,7 +5,7 @@ date: 2014-03-13 13:22:41 +0000
 comments: true
 categories: Octopress
 ---
-I've been looking for a nice system to use to create blog posts as I get back in to development. I've seen a couple of very ncie blogs that use [Octopress](http://octopress.org/), so I decided to give it a try.
+{% img left http://www.gravatar.com/avatar/712764174a1641db425b971456e63015?r=x&s=700 150 150 'me' 'me' %} I've been looking for a nice system to use to create blog posts as I get back in to development. I've seen a couple of very ncie blogs that use [Octopress](http://octopress.org/), so I decided to give it a try.
 
 I did the setup on a my fairly new MacBook Pro, running OS X Mavericks. Was fairly easy, even with my incredibly rusty knowledge of Ruby but there were a couple of gotchas that took a little bit of [Stack Overflowing](http://stackoverflow.com/) to figure out so I thought it may be worth writing this up as my first post using the system. With these notes, should take you less than five minutes to install and be up and running.
 <!-- more -->
