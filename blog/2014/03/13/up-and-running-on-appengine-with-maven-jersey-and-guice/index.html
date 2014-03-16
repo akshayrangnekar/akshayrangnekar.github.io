@@ -1,0 +1,393 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Up and Running on AppEngine With Maven, Jersey and Guice - Part 1 - Akshay's Programming Blog</title>
+  <meta name="author" content="Akshay Rangnekar">
+
+  
+  <meta name="description" content="After 10 years away from proper coding, I&rsquo;m building a new application. I&rsquo;ll talk more about Listerly and some of my design choices at a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://akshayrangnekar.github.io/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Akshay's Programming Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!-- <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href='//fonts.googleapis.com/css?family=Droid+Sans|Raleway:900' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+    <img class="left" src="http://www.gravatar.com/avatar/712764174a1641db425b971456e63015?r=x&s=700" width="50" height="50" title="me" alt="me">
+  <h1><a href="/">Akshay's Programming Blog</a></h1>
+  
+    <h2>Notes on Coding</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:akshayrangnekar.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Up and Running on AppEngine With Maven, Jersey and Guice - Part 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-13T17:20:31+00:00" pubdate data-updated="true">Mar 13<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>After 10 years away from proper coding, I&rsquo;m building a new application. I&rsquo;ll talk more about Listerly and some of my design choices at a later time, but this post should help document the process so if anyone else wants this type of a setup it&rsquo;s easy to get going.</p>
+
+<ul>
+<li><a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Part 1</a> gets you set up with maven and a blank repository on github</li>
+<li><a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Part 2</a> gets you to the point of having a working web application running locally and deployed on AppEngine.</li>
+<li>Part 3 adds Jersey, Freemarker and Guice to the mix.</li>
+</ul>
+
+
+<!-- more -->
+
+
+<h2>Create AppEngine Project</h2>
+
+<p>Very simple. Go to <a href="http://appengine.google.com">appengine.google.com</a>. Login, then click &ldquo;Create Application&rdquo;:
+<img src="/images/postimages/appengine1.png"></p>
+
+<p>Find a nice identifier is available, and give your application a descriptive name. For the moment, I&rsquo;ve set with the default authentication options, that allows any Google user to authenticate to your app (for the areas that you enable authentication):
+<img src="/images/postimages/appengine2.png"></p>
+
+<p>Hopefully that should be all you need to do. Tell Google to go ahead and you should have a blank project ready to go:
+<img src="/images/postimages/appengine3.png"></p>
+
+<h2>Install Maven</h2>
+
+<p>First, download Maven from the Apache download site:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mbp:~ akshay$ cd Dev/
+</span><span class='line'>mbp:Dev akshay$ mkdir lib
+</span><span class='line'>mbp:Dev akshay$ cd lib/
+</span><span class='line'>mbp:lib akshay$ curl -O http://apache.mirror.anlx.net/maven/maven-3/3.2.1/binaries/apache-maven-3.2.1-bin.tar.gz
+</span><span class='line'>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+</span><span class='line'>                                 Dload  Upload   Total   Spent    Left  Speed
+</span><span class='line'>100 6765k  100 6765k    0     0  1757k      0  0:00:03  0:00:03 --:--:-- 1756k
+</span><span class='line'>mbp:lib akshay$ </span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then unzip the file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mbp:lib akshay$ ls
+</span><span class='line'>apache-maven-3.2.1-bin.tar.gz
+</span><span class='line'>mbp:lib akshay$ tar -xvzf apache-maven-3.2.1-bin.tar.gz </span></code></pre></td></tr></table></div></figure>
+
+
+<p>Set some environment variables:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">export </span><span class="nv">M2_HOME</span><span class="o">=</span>/Users/akshay/Dev/lib/apache-maven-3.2.1/
+</span><span class='line'><span class="nb">export </span><span class="nv">M2</span><span class="o">=</span><span class="nv">$M2_HOME</span>/bin
+</span><span class='line'><span class="nb">export </span><span class="nv">MAVEN_OPTS</span><span class="o">=</span><span class="s2">&quot;-Xms256m -Xmx512m&quot;</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$M2</span>:<span class="nv">$PATH</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Check that we&rsquo;re good:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">mbp:lib akshay$</span> mvn -version
+</span><span class='line'><span class="go">Apache Maven 3.2.1 (ea8b2b07643dbb1b84b6d16e1f08391b666bc1e9; 2014-02-14T17:37:52+00:00)</span>
+</span><span class='line'><span class="go">Maven home: /Users/akshay/Dev/lib/apache-maven-3.2.1</span>
+</span><span class='line'><span class="go">Java version: 1.7.0_51, vendor: Oracle Corporation</span>
+</span><span class='line'><span class="go">Java home: /Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/jre</span>
+</span><span class='line'><span class="go">Default locale: en_US, platform encoding: UTF-8</span>
+</span><span class='line'><span class="go">OS name: &quot;mac os x&quot;, version: &quot;10.9.2&quot;, arch: &quot;x86_64&quot;, family: &quot;mac&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Create repository</h2>
+
+<p>Go to GitHub and create a new private repository
+<img src="/images/postimages/github-newrepo1.png"></p>
+
+<p>Note I&rsquo;ve asked it to create a README for me so I can clone. Personal preference &ndash; I prefer to <code>clone</code> only rather than <code>init</code>.
+<img src="/images/postimages/github-newrepo2.png"></p>
+
+<p><img src="/images/postimages/github-newrepo3.png"></p>
+
+<p>Then clone to your local development directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">mbp:Dev akshay$</span> mkdir Listerly
+</span><span class='line'><span class="gp">mbp:Dev akshay$</span> <span class="nb">cd </span>Listerly/
+</span><span class='line'><span class="gp">mbp:Listerly akshay$</span> ls
+</span><span class='line'><span class="gp">mbp:Listerly akshay$</span> git clone https://github.com/akshayrangnekar/listerly.git
+</span><span class='line'><span class="go">Cloning into &#39;listerly&#39;...</span>
+</span><span class='line'><span class="go">remote: Counting objects: 3, done.</span>
+</span><span class='line'><span class="go">remote: Total 3 (delta 0), reused 0 (delta 0)</span>
+</span><span class='line'><span class="go">Unpacking objects: 100% (3/3), done.</span>
+</span><span class='line'><span class="go">Checking connectivity... done.</span>
+</span><span class='line'><span class="gp">mbp:Listerly akshay$</span> <span class="nb">cd </span>listerly
+</span><span class='line'><span class="gp">mbp:listerly akshay$</span> ls
+</span><span class='line'><span class="go">README.md</span>
+</span><span class='line'><span class="gp">mbp:listerly akshay$</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s it for Part 1. In <a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Part 2</a> we&rsquo;ll create a Maven project for AppEngine and a simple dummy servlet.</p>
+
+<p><a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Continue &ndash;></a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Akshay Rangnekar</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-13T17:20:31+00:00" pubdate data-updated="true">Mar 13<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/appengine/'>AppEngine</a>, <a class='category' href='/blog/categories/guice/'>Guice</a>, <a class='category' href='/blog/categories/java/'>Java</a>, <a class='category' href='/blog/categories/jersey/'>Jersey</a>, <a class='category' href='/blog/categories/maven/'>Maven</a>, <a class='category' href='/blog/categories/git/'>git</a>, <a class='category' href='/blog/categories/github/'>github</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://akshayrangnekar.github.io/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/" data-via="akshayr" data-counturl="http://akshayrangnekar.github.io/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/03/13/setting-up-octopress/" title="Previous Post: Setting up Octopress">&laquo; Setting up Octopress</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/" title="Next Post: Up and running on AppEngine with Maven, Jersey and Guice - Part 2">Up and running on AppEngine with Maven, Jersey and Guice - Part 2 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/13/setting-up-octopress/">Setting Up Octopress</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/akshayrangnekar">@akshayrangnekar</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'akshayrangnekar',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus googleplus-hidden">
+  <h1>
+    <a href="https://plus.google.com/akshay.rangnekar@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Akshay Rangnekar -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

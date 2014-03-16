@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Octopress | Akshay's Programming Blog]]></title>
   <link href="http://akshayrangnekar.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://akshayrangnekar.github.io/"/>
-  <updated>2014-03-13T14:53:52+00:00</updated>
+  <updated>2014-03-16T20:07:13+00:00</updated>
   <id>http://akshayrangnekar.github.io/</id>
   <author>
     <name><![CDATA[Akshay Rangnekar]]></name>
@@ -43,7 +43,7 @@ cd octopress
 
 <p>Following the instructions, next step was to download prerequisites:
 ``` console
-mbp:octopress akshay$ bundle install
+mbp:octopress$ bundle install
 Fetching gem metadata from <a href="https://rubygems.org/.......">https://rubygems.org/.......</a>
 Fetching additional metadata from <a href="https://rubygems.org/..">https://rubygems.org/..</a></p>
 
@@ -53,7 +53,7 @@ Make sure that <code>gem install rake -v '0.9.2.2'</code> succeeds before bundli
 <code>
 Uh oh. But this one is fairly simple to figure out - the OS X Gems system installs ruby gems into a superuser writable directory by default. Easy fix.
 </code> console
-mbp:octopress akshay$ sudo gem install bundler
+mbp:octopress$ sudo gem install bundler
 Password:
 Fetching: bundler-1.5.3.gem (100%)
 Successfully installed bundler-1.5.3
@@ -66,7 +66,7 @@ Well that was easy.</p>
 <ul>
 <li>Now we have to install the bundle
 ``` console
-mbp:octopress akshay$ bundle install
+mbp:octopress$ bundle install
 Fetching gem metadata from <a href="https://rubygems.org/.......">https://rubygems.org/.......</a>
 Fetching additional metadata from <a href="https://rubygems.org/..">https://rubygems.org/..</a></li>
 </ul>
@@ -75,7 +75,7 @@ Fetching additional metadata from <a href="https://rubygems.org/..">https://ruby
 <p>Errno::EACCES: Permission denied &ndash; /Library/Ruby/Gems/2.0.0/build_info/rake-0.9.2.2.info
 An error occurred while installing rake (0.9.2.2), and Bundler cannot continue.
 Make sure that <code>gem install rake -v '0.9.2.2'</code> succeeds before bundling.
-mbp:octopress akshay$ sudo gem install rake -v &lsquo;0.9.2.2&rsquo;
+mbp:octopress$ sudo gem install rake -v &lsquo;0.9.2.2&rsquo;
 rake&rsquo;s executable &ldquo;rake&rdquo; conflicts with /usr/bin/rake
 Overwrite the executable? [yN]  N
 ERROR:  Error installing rake:</p>
@@ -83,7 +83,7 @@ ERROR:  Error installing rake:</p>
 <pre><code>"rake" from rake conflicts with /usr/bin/rake
 </code></pre>
 
-<p>mbp:octopress akshay$ rake -version
+<p>mbp:octopress$ rake -version
 rake aborted!
 undefined local variable or method `rsion' for #&lt;Rake::Application:0x007fc41c8782b8></p>
 
@@ -94,13 +94,13 @@ Shit. The sudo workaround isn&rsquo;t going to cut it. And don&rsquo;t really wa
 <ul>
 <li><p>Set the gem install directory (for good measure, also do this in .profile)
 <code>console
-mbp:octopress akshay$ export GEM_HOME=/Users/akshay/.gem/ruby/2.0.0/
-mbp:octopress akshay$ echo $GEM_HOME
+mbp:octopress$ export GEM_HOME=/Users/akshay/.gem/ruby/2.0.0/
+mbp:octopress$ echo $GEM_HOME
 /Users/akshay/.gem/ruby/2.0.0/
 </code></p></li>
 <li><p>And try again
 ``` console
-mbp:octopress akshay$ bundle install
+mbp:octopress$ bundle install
 Fetching gem metadata from <a href="https://rubygems.org/.......">https://rubygems.org/.......</a>
 Fetching additional metadata from <a href="https://rubygems.org/..">https://rubygems.org/..</a>
 Installing rake (0.9.2.2)</p></li>
@@ -138,10 +138,10 @@ Make sure that <code>gem install RedCloth -v '4.2.9'</code> succeeds before bund
 
 <p>Fortunately, some helpful soul had already answered this on <a href="http://stackoverflow.com/questions/22352838/ruby-gem-install-json-fails-on-mavericks-and-xcode-5-1-unknown-argument-mul">StackOverflow</a>. Again, a fairly simple solution. (Again, another line for my .profile)
 ``` console
-mbp:octopress akshay$ export ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future gem install json
-mbp:octopress akshay$ gem install RedCloth -v &lsquo;4.2.9&rsquo;</p>
+mbp:octopress$ export ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future gem install json
+mbp:octopress$ gem install RedCloth -v &lsquo;4.2.9&rsquo;</p>
 
-<p>mbp:octopress akshay$ gem install RedCloth -v &lsquo;4.2.9&rsquo;
+<p>mbp:octopress$ gem install RedCloth -v &lsquo;4.2.9&rsquo;
 Building native extensions.  This could take a while&hellip;
 Successfully installed RedCloth-4.2.9
 Parsing documentation for RedCloth-4.2.9
@@ -157,7 +157,7 @@ Installing ri documentation for RedCloth-4.2.9
 <ul>
 <li><p>Well there are some warnings, but they&rsquo;re in the documentation and overall it looks better. Lets try the main dependencies installation again.
 <code>console
-mbp:octopress akshay$ bundle install
+mbp:octopress$ bundle install
 Fetching gem metadata from https://rubygems.org/.......
 Fetching additional metadata from https://rubygems.org/..
 Using rake (0.9.2.2)
@@ -193,7 +193,7 @@ Use `bundle show [gemname]` to see where a bundled gem is installed.
 </code></p></li>
 <li><p>Looks good. Now to complete the install
 ``` console
-mbp:octopress akshay$ rake install</p>
+mbp:octopress$ rake install</p>
 
 <h2>Copying classic theme into ./source and ./sass</h2>
 
@@ -218,7 +218,7 @@ Awesome. That&rsquo;s the basic install done.</p></li>
 
 <p>Then tell Octopress how to deploy to your github page.
 ``` console
-mbp:octopress akshay$ rake setup_github_pages
+mbp:octopress$ rake setup_github_pages
 Enter the read/write url for your repository
 (For example, &lsquo;git@github.com:your_username/your_username.github.io.git)</p>
 
@@ -290,13 +290,13 @@ google_plus_one_size: medium</p>
 
 <h1>Hidden: No visible button, just add author information to search results</h1>
 
-<p>googleplus_user: <a href="&#109;&#x61;&#x69;&#108;&#116;&#111;&#58;&#x61;&#x6b;&#x73;&#104;&#x61;&#x79;&#46;&#x72;&#x61;&#x6e;&#x67;&#x6e;&#x65;&#107;&#x61;&#114;&#x40;&#103;&#x6d;&#97;&#105;&#x6c;&#46;&#99;&#111;&#x6d;">&#x61;&#107;&#115;&#x68;&#97;&#x79;&#46;&#x72;&#x61;&#110;&#x67;&#x6e;&#x65;&#107;&#97;&#114;&#x40;&#103;&#x6d;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>
+<p>googleplus_user: <a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#58;&#97;&#107;&#115;&#x68;&#x61;&#x79;&#46;&#x72;&#x61;&#x6e;&#x67;&#110;&#101;&#107;&#97;&#x72;&#64;&#x67;&#x6d;&#97;&#105;&#x6c;&#46;&#x63;&#111;&#x6d;">&#x61;&#x6b;&#115;&#104;&#x61;&#121;&#46;&#x72;&#x61;&#x6e;&#103;&#110;&#x65;&#107;&#x61;&#114;&#64;&#x67;&#109;&#97;&#105;&#108;&#46;&#x63;&#111;&#109;</a>
 googleplus_hidden: true
 ```</p>
 
 <p>And we&rsquo;re ready to deploy.
 ```
-mbp:octopress akshay$ rake generate</p>
+mbp:octopress$ rake generate</p>
 
 <h2>Generating Site with Jekyll</h2>
 
@@ -305,7 +305,7 @@ mbp:octopress akshay$ rake generate</p>
 Configuration from /Users/akshay/Dev/Octopress/octopress/_config.yml
 Building site: source &ndash;> public
 Successfully generated site: source &ndash;> public
-mbp:octopress akshay$ rake deploy</p>
+mbp:octopress$ rake deploy</p>
 
 <h2>Deploying branch to Github Pages</h2>
 
@@ -355,7 +355,7 @@ To <a href="https://github.com/akshayrangnekar/akshayrangnekar.github.io.git">ht
 
 <p>And we&rsquo;re done (almost). Just make sure you commit your code to the repo.
 ```
-mbp:octopress akshay$ git status
+mbp:octopress$ git status
 On branch source
 Your branch is based on &lsquo;origin/master&rsquo;, but the upstream is gone.
   (use &ldquo;git branch &mdash;unset-upstream&rdquo; to fixup)</p>
@@ -376,12 +376,12 @@ source/
 </code></pre>
 
 <p>no changes added to commit (use &ldquo;git add&rdquo; and/or &ldquo;git commit -a&rdquo;)
-mbp:octopress akshay$ git add .
-mbp:octopress akshay$ git commit -m &lsquo;First commit&rsquo;
+mbp:octopress$ git add .
+mbp:octopress$ git commit -m &lsquo;First commit&rsquo;
 [source 13f9d4a] First commit
  119 files changed, 2784 insertions(+), 3 deletions(&ndash;)
  <LINES REMOVED>
-mbp:octopress akshay$ git push origin source
+mbp:octopress$ git push origin source
 Counting objects: 4771, done.
 Delta compression using up to 8 threads.
 Compressing objects: 100% (2124/2124), done.
@@ -389,12 +389,12 @@ Writing objects: 100% (4771/4771), 1.30 MiB | 136.00 KiB/s, done.
 Total 4771 (delta 2296), reused 4742 (delta 2270)
 To <a href="https://github.com/akshayrangnekar/akshayrangnekar.github.io.git">https://github.com/akshayrangnekar/akshayrangnekar.github.io.git</a>
  * [new branch]      source &ndash;> source
-mbp:octopress akshay$
+mbp:octopress$
 ```</p>
 
 <p>Now we&rsquo;re done. And ready to create our first post.
 <code>
-mbp:octopress akshay$ rake new_post["Setting up Octopress"]
+mbp:octopress$ rake new_post["Setting up Octopress"]
 mkdir -p source/_posts
 Creating new post: source/_posts/2014-03-13-setting-up-octopress.markdown
 </code>
