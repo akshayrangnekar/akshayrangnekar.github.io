@@ -9,7 +9,8 @@ After 10 years away from proper coding, I'm building a new application. I'll tal
 
 * [Part 1](/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/) gets you set up with maven and a blank repository on github
 * [Part 2](/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/) gets you to the point of having a working web application running locally and deployed on AppEngine.
-* Part 3 adds Jersey, Freemarker and Guice to the mix.
+* [Part 3](/blog/2014/03/16/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/) adds Jersey, Freemarker and Guice to the mix.
+
 <!-- more -->
 ## Create AppEngine Project ##
 Very simple. Go to [appengine.google.com](http://appengine.google.com). Login, then click "Create Application":
