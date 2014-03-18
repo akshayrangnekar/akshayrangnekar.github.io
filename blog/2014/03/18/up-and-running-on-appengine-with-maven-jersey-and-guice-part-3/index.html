@@ -1,0 +1,1148 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Up and Running on AppEngine With Maven, Jersey and Guice - Part 3 - Akshay's Programming Blog</title>
+  <meta name="author" content="Akshay Rangnekar">
+
+  
+  <meta name="description" content="This is part three of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice. Part 2 got us to the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Akshay's Programming Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!-- <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href='//fonts.googleapis.com/css?family=Droid+Sans|Raleway:900' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+    <img class="left" src="http://www.gravatar.com/avatar/712764174a1641db425b971456e63015?r=x&s=700" width="50" height="50" title="me" alt="me">
+  <h1><a href="/">Akshay's Programming Blog</a></h1>
+  
+    <h2>Notes on Coding</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:akshayrangnekar.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Up and Running on AppEngine With Maven, Jersey and Guice - Part 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-18T12:23:37+00:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This is part three of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.</p>
+
+<p><a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Part 2</a> got us to the point of having a working web application running locally and deployed on AppEngine. Part 3 will get Guice &amp; Jersey up and running.</p>
+
+<!-- more -->
+
+
+<h2>Guice up</h2>
+
+<p>After the relative nightmare of some of the other things we&rsquo;ve done in earlier parts, Guice is remarkably easy to get working. Some of it is due to good documentation, but mostly it&rsquo;s just a great framework that&rsquo;s very easy to use.</p>
+
+<p>The first step is to include the appropriate dependencies in our <code>pom.xml</code>. Here&rsquo;s the modified pom.xml that includes Guice and the Guice-Servlet packages. Here&rsquo;s the reworked file. See lines 24-33 for changes:</p>
+
+<figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/3/pom.xml'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>com.listerly<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>listerly-server<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>0.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;packaging&gt;</span>war<span class="nt">&lt;/packaging&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;name&gt;</span>Listerly Main Server<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;url&gt;</span>http://www.listerly.com<span class="nt">&lt;/url&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>com.google.appengine<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>appengine-api-1.0-sdk<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>1.9.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>servlet-api<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;version&gt;</span>2.5<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>com.google.inject.extensions<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>guice-servlet<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;version&gt;</span>3.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>com.google.inject<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>guice<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;version&gt;</span>3.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;build&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>org.eclipse.jetty<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>jetty-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;version&gt;</span>9.1.3.v20140225<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>com.google.appengine<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>appengine-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.8.7<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/build&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, we setup our Guice modules. First, we extend <code>ServletModule</code> to help serve our HelloWorldServlet:</p>
+
+<figure class='code'><figcaption><span> (ListerlyServletModule.java)</span> <a href='/downloads/code/3/ListerlyServletModule.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">config</span><span class="o">.</span><span class="na">guice</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.google.inject.servlet.ServletModule</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.listerly.HelloWorldServlet</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ListerlyServletModule</span> <span class="kd">extends</span> <span class="n">ServletModule</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">configureServlets</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">serve</span><span class="o">(</span><span class="s">&quot;/hi&quot;</span><span class="o">).</span><span class="na">with</span><span class="o">(</span><span class="n">HelloWorldServlet</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we extend <code>GuiceServletContextListener</code> to tell Guice about our new <code>ServletModule</code>:</p>
+
+<figure class='code'><figcaption><span> (ListerlyGuiceServletContextListener.java)</span> <a href='/downloads/code/3/ListerlyGuiceServletContextListener.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">config</span><span class="o">.</span><span class="na">guice</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.google.inject.Guice</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.google.inject.Injector</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.google.inject.servlet.GuiceServletContextListener</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ListerlyGuiceServletContextListener</span> <span class="kd">extends</span>
+</span><span class='line'>      <span class="n">GuiceServletContextListener</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">protected</span> <span class="n">Injector</span> <span class="nf">getInjector</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">Guice</span><span class="o">.</span><span class="na">createInjector</span><span class="o">(</span><span class="k">new</span> <span class="n">ListerlyServletModule</span><span class="o">());</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, we have to load Guice and our ServletContentListener in the web.xml. Notice we now take out our Servlet definition.</p>
+
+<figure class='code'><figcaption><span> (web.xml)</span> <a href='/downloads/code/3/web.xml'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;web-app</span> <span class="na">version=</span><span class="s">&quot;2.5&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://java.sun.com/xml/ns/javaee&quot;</span>
+</span><span class='line'><span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'><span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;filter&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;filter-name&gt;</span>guiceFilter<span class="nt">&lt;/filter-name&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;filter-class&gt;</span>com.google.inject.servlet.GuiceFilter<span class="nt">&lt;/filter-class&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/filter&gt;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nt">&lt;filter-mapping&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;filter-name&gt;</span>guiceFilter<span class="nt">&lt;/filter-name&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;url-pattern&gt;</span>/*<span class="nt">&lt;/url-pattern&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/filter-mapping&gt;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nt">&lt;listener&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;listener-class&gt;</span>com.listerly.config.guice.ListerlyGuiceServletContextListener<span class="nt">&lt;/listener-class&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/listener&gt;</span>
+</span><span class='line'><span class="nt">&lt;/web-app&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Make a quick change to HelloWorldServlet to prove that you&rsquo;re actually hitting the new Servlet (I&rsquo;ve now got <code>Hello, handrolled, guiced AppEngine!</code> as my message). Then run the devserver and hit the server. You should be looking good:</p>
+
+<p><img src="/images/postimages/3/guiced.png"></p>
+
+<p>Great, Guice is clearly serving our Servlet, but let&rsquo;s make absolutely sure by injecting a class. I&rsquo;ve created a class called <code>TestClass</code>. I&rsquo;m marking it as a <code>@Singleton</code> to ensure that Guice only creates it once:</p>
+
+<figure class='code'><figcaption><span> (TestClass.java)</span> <a href='/downloads/code/3/TestClass.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Date</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.inject.Inject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.inject.Singleton</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Singleton</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestClass</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Inject</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Date</span> <span class="n">date</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">TestClass</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Date</span> <span class="nf">getDate</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">date</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then in my HelloWorldServlet I inject the <code>TestClass</code> object, and print out the date it is loaded with:</p>
+
+<figure class='code'><figcaption><span> (HelloWorldServlet.java)</span> <a href='/downloads/code/3/HelloWorldServlet.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.text.SimpleDateFormat</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.inject.Inject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.inject.Singleton</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServlet</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;serial&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@Singleton</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Inject</span>
+</span><span class='line'>  <span class="n">TestClass</span> <span class="n">theClass</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">resp</span><span class="o">)</span>
+</span><span class='line'>          <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">resp</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">&quot;text/plain&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">resp</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello, handrolled, guiced AppEngine!&quot;</span><span class="o">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">SimpleDateFormat</span> <span class="n">sdf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleDateFormat</span><span class="o">(</span><span class="s">&quot;HH:mm:ss.SSS&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">resp</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Date is: &quot;</span> <span class="o">+</span> <span class="n">sdf</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">theClass</span><span class="o">.</span><span class="na">getDate</span><span class="o">()));</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Reload the page a few times. Things are behaving as you would expect: you get the time at which you first loaded the page. Hopefully Jersey will be that easy!</p>
+
+<h2>Jersey? Sure.</h2>
+
+<p>There are a bunch of really <a href="http://blog.palominolabs.com/2011/08/15/a-simple-java-web-stack-with-guice-jetty-jersey-and-jackson/">good</a> <a href="https://sites.google.com/a/athaydes.com/renato-athaydes//posts/jersey_guice_rest_api">articles</a> on how to use Jersey with Guice. Unfortunately they&rsquo;re all based on Jersey 1.X and Jersey 2.0 is now out. Jersey 2.0 seems to be a different story judging by <a href="https://java.net/jira/browse/HK2-39">this</a>, <a href="https://java.net/jira/browse/HK2-121">this</a>, <a href="https://java.net/jira/browse/HK2-39">this</a> and <a href="https://hk2.java.net/guice-bridge/index.html">this</a>.</p>
+
+<p>It seems like Jersey&rsquo;s inclusion of the HK2 dependency injection framework means lots of problems with getting Guice up and running. There are three options to proceed: (1) Revert back to better understood Jersey 1.X library, (2) Switch from Guice to HK2, or (3) Try to get something going with the help of a couple of <a href="https://github.com/aluedeke/jersey2-guice-example">working</a> <a href="https://github.com/piersy/jersey2-guice-example-with-test">samples</a>.</p>
+
+<p>I decided to push through and try #3. I&rsquo;m a big fan of Guice and don&rsquo;t think HK2 is as mature so option 2 was out. Option 1 is tempting, but seemed like the fallback option since I figure at some stage Jersey 1.X is going to be too outdated to continue with so better to eat the pain now rather than after I have 100s of services.</p>
+
+<p>The following instructions get things working. I&rsquo;m not sure they&rsquo;re the perfect (or best) way to do things, but after a day of struggling I&rsquo;m going to settle for what I have. Things do at least seem to be working.</p>
+
+<p>First, lets start with the dependencies. Here&rsquo;s my final working <code>pom.xml</code>:</p>
+
+<figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/3/b/pom.xml'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>com.listerly<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>listerly-server<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>0.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;packaging&gt;</span>war<span class="nt">&lt;/packaging&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;name&gt;</span>Listerly Main Server<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;url&gt;</span>http://www.listerly.com<span class="nt">&lt;/url&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;properties&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;appengine.sdk.version&gt;</span>1.9.0<span class="nt">&lt;/appengine.sdk.version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;jersey.version&gt;</span>2.5.1<span class="nt">&lt;/jersey.version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;guice.version&gt;</span>3.0<span class="nt">&lt;/guice.version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;servlet.api.version&gt;</span>2.5<span class="nt">&lt;/servlet.api.version&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/properties&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>com.google.appengine<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>appengine-api-1.0-sdk<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>${appengine.sdk.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>servlet-api<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>${servlet.api.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>com.google.inject.extensions<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>guice-servlet<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>${guice.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>com.google.inject<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>guice<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>${guice.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.core<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>jersey-server<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.containers<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>jersey-container-servlet<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.ext<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>jersey-mvc-jsp<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.ext<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>jersey-mvc-freemarker<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;scope&gt;</span>compile<span class="nt">&lt;/scope&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;exclusions&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;exclusion&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.freemarker<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>freemarker<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/exclusion&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/exclusions&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>org.glassfish.hk2<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>guice-bridge<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>2.2.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>org.freemarker<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>freemarker-gae<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>2.3.20<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nt">&lt;build&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;groupId&gt;</span>org.eclipse.jetty<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;artifactId&gt;</span>jetty-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;version&gt;</span>9.1.3.v20140225<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;groupId&gt;</span>com.google.appengine<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;artifactId&gt;</span>appengine-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;version&gt;</span>${appengine.sdk.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/build&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice the new dependencies for Jersey, Freemarker (my template language of choice with Jersey) and the HK2-Guice bridge.</p>
+
+<p>Next we have to change our <code>web.xml</code> to use Jersey:</p>
+
+<figure class='code'><figcaption><span> (web.xml)</span> <a href='/downloads/code/3/b/web.xml'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;web-app</span> <span class="na">version=</span><span class="s">&quot;2.5&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://java.sun.com/xml/ns/javaee&quot;</span>
+</span><span class='line'><span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'><span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;listener&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;listener-class&gt;</span>com.listerly.config.guice.ListerlyGuiceServletContextListener<span class="nt">&lt;/listener-class&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/listener&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;filter&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;filter-name&gt;</span>guiceFilter<span class="nt">&lt;/filter-name&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;filter-class&gt;</span>com.google.inject.servlet.GuiceFilter<span class="nt">&lt;/filter-class&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/filter&gt;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nt">&lt;filter-mapping&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;filter-name&gt;</span>guiceFilter<span class="nt">&lt;/filter-name&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;url-pattern&gt;</span>/*<span class="nt">&lt;/url-pattern&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/filter-mapping&gt;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nt">&lt;filter&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;filter-name&gt;</span>jersey-filter<span class="nt">&lt;/filter-name&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;filter-class&gt;</span>org.glassfish.jersey.servlet.ServletContainer<span class="nt">&lt;/filter-class&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;init-param&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;param-name&gt;</span>javax.ws.rs.Application<span class="nt">&lt;/param-name&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;param-value&gt;</span>com.listerly.config.jersey.JerseyConfiguration<span class="nt">&lt;/param-value&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/init-param&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;init-param&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;param-name&gt;</span>jersey.config.server.provider.classnames<span class="nt">&lt;/param-name&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;param-value&gt;</span>org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature<span class="nt">&lt;/param-value&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/init-param&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/filter&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;filter-mapping&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;filter-name&gt;</span>jersey-filter<span class="nt">&lt;/filter-name&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;url-pattern&gt;</span>/*<span class="nt">&lt;/url-pattern&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/filter-mapping&gt;</span> 
+</span><span class='line'><span class="nt">&lt;/web-app&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This now has a filter defined for Jersey (lines 19-30), which is configured with (a) our Application (more on that in a second) and (b) the Freemarker mumbo-jumbo. The filter, like the Guice filter, is applied to all URLs.</p>
+
+<p>The next file to go through is the &ldquo;Application&rdquo; for Jersey, which defines how Jersey is set up:</p>
+
+<figure class='code'><figcaption><span> (JerseyConfiguration.java)</span> <a href='/downloads/code/3/b/JerseyConfiguration.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">config</span><span class="o">.</span><span class="na">jersey</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">logging</span><span class="o">.</span><span class="na">Logger</span><span class="o">.</span><span class="na">getLogger</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.logging.Logger</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.inject.Inject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.ServletContext</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.glassfish.hk2.api.ServiceLocator</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.glassfish.jersey.server.ResourceConfig</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.jvnet.hk2.guice.bridge.api.GuiceBridge</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.google.inject.Injector</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JerseyConfiguration</span> <span class="kd">extends</span> <span class="n">ResourceConfig</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">log</span> <span class="o">=</span> <span class="n">getLogger</span><span class="o">(</span><span class="n">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Inject</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">JerseyConfiguration</span><span class="o">(</span><span class="n">ServiceLocator</span> <span class="n">serviceLocator</span><span class="o">,</span> <span class="n">ServletContext</span> <span class="n">servletContext</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&quot;Creating JerseyConfiguration&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">packages</span><span class="o">(</span><span class="s">&quot;com.listerly.resources&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">register</span><span class="o">(</span><span class="n">FreemarkerMvcFeature</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">GuiceBridge</span><span class="o">.</span><span class="na">getGuiceBridge</span><span class="o">().</span><span class="na">initializeGuiceBridge</span><span class="o">(</span><span class="n">serviceLocator</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">GuiceIntoHK2Bridge</span> <span class="n">guiceBridge</span> <span class="o">=</span> <span class="n">serviceLocator</span><span class="o">.</span><span class="na">getService</span><span class="o">(</span><span class="n">GuiceIntoHK2Bridge</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">guiceBridge</span><span class="o">.</span><span class="na">bridgeGuiceInjector</span><span class="o">((</span><span class="n">Injector</span><span class="o">)</span> <span class="n">servletContext</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">Injector</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Three important parts to note here: (1) Line 24 tells Jersey which package will contain our Resources &ndash; the POJOs that will respond to requests. (2) Line 26 tells Jersey we will be using Freemarker. (3) Lines 28-30 set up the HK2-Guice bridge.</p>
+
+<p>Next, lets create a simple POJO to respond to requests:</p>
+
+<figure class='code'><figcaption><span> (HeyResource.java)</span> <a href='/downloads/code/3/b/HeyResource.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">resources</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.ws.rs.GET</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.ws.rs.Path</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.ws.rs.Produces</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.ws.rs.core.MediaType</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Path</span><span class="o">(</span><span class="s">&quot;/Hey&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HeyResource</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@GET</span>
+</span><span class='line'>  <span class="nd">@Produces</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_PLAIN</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="o">(</span><span class="s">&quot;Hey there&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lets fire up the devserver and load <code>http://localhost:8080/Hey</code></p>
+
+<p><img src="/images/postimages/3/hey.png"></p>
+
+<p>That all looks good. But let&rsquo;s make absolutely sure injection is working correctly.</p>
+
+<p>Lets add a second injectable class to begin. Notice that this one is RequestScoped, as opposed to our previous one which was a Singleton:</p>
+
+<figure class='code'><figcaption><span> (SecondTest.java)</span> <a href='/downloads/code/3/c/SecondTest.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Date</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.inject.Inject</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.google.inject.servlet.RequestScoped</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@RequestScoped</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SecondTest</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Inject</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Date</span> <span class="n">date</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">SecondTest</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Date</span> <span class="nf">getDate</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">date</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can now add a second method and inject a couple of objects into our class:</p>
+
+<figure class='code'><figcaption><span> (HeyResource.java)</span> <a href='/downloads/code/3/c/HeyResource.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">resources</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.text.SimpleDateFormat</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.ws.rs.GET</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.ws.rs.Path</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.ws.rs.Produces</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.ws.rs.QueryParam</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.ws.rs.core.MediaType</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.inject.Inject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.listerly.SecondTest</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.listerly.TestClass</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Path</span><span class="o">(</span><span class="s">&quot;/Hey&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HeyResource</span> <span class="o">{</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nd">@Inject</span> <span class="n">TestClass</span> <span class="n">first</span><span class="o">;</span>
+</span><span class='line'>  <span class="nd">@Inject</span> <span class="n">SecondTest</span> <span class="n">second</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nd">@GET</span>
+</span><span class='line'>  <span class="nd">@Produces</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_PLAIN</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="o">(</span><span class="s">&quot;Hey there&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nd">@GET</span>
+</span><span class='line'>  <span class="nd">@Produces</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_PLAIN</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Path</span><span class="o">(</span><span class="s">&quot;/foo&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">foo</span><span class="o">(</span><span class="nd">@QueryParam</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">)</span> <span class="n">String</span> <span class="n">test</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">SimpleDateFormat</span> <span class="n">sdf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleDateFormat</span><span class="o">(</span><span class="s">&quot;HH:mm:ss.SSS&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">StringBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">builder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;Hi there. You entered &quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">test</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;\n&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">builder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;The first date is:&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">sdf</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">first</span><span class="o">.</span><span class="na">getDate</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;\n&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">builder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;The second date is:&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">sdf</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">second</span><span class="o">.</span><span class="na">getDate</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;\n&quot;</span><span class="o">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Run the server, and everything looks good:</p>
+
+<p><img src="/images/postimages/3/heyFoo.png"></p>
+
+<p>Push everything to AppServer and make sure everything is fine. We&rsquo;ll be using more of Jersey and Guice in the next couple of steps as we get started on templates and persistence.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Akshay Rangnekar</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-18T12:23:37+00:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/appengine/'>AppEngine</a>, <a class='category' href='/blog/categories/guice/'>Guice</a>, <a class='category' href='/blog/categories/java/'>Java</a>, <a class='category' href='/blog/categories/jersey/'>Jersey</a>, <a class='category' href='/blog/categories/maven/'>Maven</a>, <a class='category' href='/blog/categories/git/'>git</a>, <a class='category' href='/blog/categories/github/'>github</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/" data-via="akshayr" data-counturl="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/" title="Previous Post: Up and running on AppEngine with Maven, Jersey and Guice - Part 2">&laquo; Up and running on AppEngine with Maven, Jersey and Guice - Part 2</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/13/setting-up-octopress/">Setting Up Octopress</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/akshayrangnekar">@akshayrangnekar</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'akshayrangnekar',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus googleplus-hidden">
+  <h1>
+    <a href="https://plus.google.com/akshay.rangnekar@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Akshay Rangnekar -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
