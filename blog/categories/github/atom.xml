@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Github | Akshay's Programming Blog]]></title>
   <link href="http://akshayrangnekar.github.io/blog/categories/github/atom.xml" rel="self"/>
   <link href="http://akshayrangnekar.github.io/"/>
-  <updated>2014-03-18T15:01:00+00:00</updated>
+  <updated>2014-03-18T15:09:41+00:00</updated>
   <id>http://akshayrangnekar.github.io/</id>
   <author>
     <name><![CDATA[Akshay Rangnekar]]></name>
@@ -1452,7 +1452,7 @@ mbp:~/Dev/Listerly/listerly$ mvn jetty:run
 
 <p>Lets try pushing it to the Google servers. Run <code>mvn appengine:update</code> and if all goes well (it should!), open a browser to <code>http://[app-id].appspot.com/hi</code>. Uh oh. Doesn&rsquo;t say &ldquo;handrolled&rdquo; for me. Looks like it&rsquo;s still running the old version. Fortunately, this is to be expected because AppEngine allows you to upload multiple versions of your app, but only one of them is the &ldquo;default version&rdquo;. Lets make this version default. Visit <code>appengine.google.com</code>. Login, and then click on your application. In the left navigation bar you should see &ldquo;versions&rdquo;. Click there, and you&rsquo;ll see that you have two versions deployed: <code>1-war</code> that was created by the AppEngine archetype, and <code>1</code>, which is the version we just created. Select 1, and click make default. Now if you reload your other browser window, you should see &ldquo;Hello, handrolled AppEngine!&rdquo;. That&rsquo;s success for Part 2.</p>
 
-<p>You can choose which approach you prefer. I like the ability to have full control over my project structure so for the rest of this tutorial I&rsquo;m going to go with the second approach (which the more attentive may have guessed by the fact that this has all been done on the master branch though I claim that was accidental). Add everything into git (if you&rsquo;re going with this approach &ndash; otherwise discard everything and merge the other branch into master) and we&rsquo;ll be ready to go with <a href="/blog/2014/03/16/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Part 3</a>.</p>
+<p>You can choose which approach you prefer. I like the ability to have full control over my project structure so for the rest of this tutorial I&rsquo;m going to go with the second approach (which the more attentive may have guessed by the fact that this has all been done on the master branch though I claim that was accidental). Add everything into git (if you&rsquo;re going with this approach &ndash; otherwise discard everything and merge the other branch into master) and we&rsquo;ll be ready to go with <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Part 3</a>.</p>
 ]]></content>
   </entry>
   
@@ -1463,10 +1463,12 @@ mbp:~/Dev/Listerly/listerly$ mvn jetty:run
     <id>http://akshayrangnekar.github.io/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice</id>
     <content type="html"><![CDATA[<p>After 10 years away from proper coding, I&rsquo;m building a new application. I&rsquo;ll talk more about Listerly and some of my design choices at a later time, but this post should help document the process so if anyone else wants this type of a setup it&rsquo;s easy to get going.</p>
 
+<p>This application has many moving pieces, and to make my life easier I&rsquo;m going to have some pretty awesome tools do most of the heavy lifting for me. In no particular order, the key pieces that I&rsquo;ll be using include Google AppEngine (PAAS), maven (build), git/github (source control), Jersey (RESTful services), Guice (dependency injection), Freemarker (templates) and JPA (persistence).</p>
+
 <ul>
 <li><a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Part 1</a> gets you set up with maven and a blank repository on github</li>
 <li><a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Part 2</a> gets you to the point of having a working web application running locally and deployed on AppEngine.</li>
-<li><a href="/blog/2014/03/16/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Part 3</a> adds Jersey, Freemarker and Guice to the mix.</li>
+<li><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Part 3</a> adds Jersey and Guice to the mix.</li>
 </ul>
 
 
