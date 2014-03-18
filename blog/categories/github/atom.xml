@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Github | Akshay's Programming Blog]]></title>
   <link href="http://akshayrangnekar.github.io/blog/categories/github/atom.xml" rel="self"/>
   <link href="http://akshayrangnekar.github.io/"/>
-  <updated>2014-03-18T14:54:53+00:00</updated>
+  <updated>2014-03-18T15:01:00+00:00</updated>
   <id>http://akshayrangnekar.github.io/</id>
   <author>
     <name><![CDATA[Akshay Rangnekar]]></name>
@@ -1533,8 +1533,9 @@ OS name: "mac os x", version: "10.9.2", arch: "x86_64", family: "mac"
 <p>Go to GitHub and create a new private repository
 <img src="/images/postimages/github-newrepo1.png"></p>
 
-<p>Note I&rsquo;ve asked it to create a README for me so I can clone. Personal preference &ndash; I prefer to <code>clone</code> only rather than <code>init</code>.
-<img src="/images/postimages/github-newrepo2.png"></p>
+<p>Note I&rsquo;ve asked it to create a README for me so I can clone. Personal preference &ndash; I prefer to <code>clone</code> only rather than <code>init</code>.</p>
+
+<p><img src="/images/postimages/github-newrepo2.png"></p>
 
 <p><img src="/images/postimages/github-newrepo3.png"></p>
 
