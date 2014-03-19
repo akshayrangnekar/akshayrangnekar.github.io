@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Octopress | Akshay's Programming Blog]]></title>
   <link href="http://akshayrangnekar.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://akshayrangnekar.github.io/"/>
-  <updated>2014-03-18T15:09:41+00:00</updated>
+  <updated>2014-03-19T23:56:21+00:00</updated>
   <id>http://akshayrangnekar.github.io/</id>
   <author>
     <name><![CDATA[Akshay Rangnekar]]></name>
@@ -290,7 +290,7 @@ google_plus_one_size: medium</p>
 
 <h1>Hidden: No visible button, just add author information to search results</h1>
 
-<p>googleplus_user: <a href="&#x6d;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#97;&#107;&#x73;&#x68;&#97;&#121;&#46;&#114;&#x61;&#110;&#x67;&#x6e;&#x65;&#x6b;&#97;&#114;&#x40;&#103;&#109;&#x61;&#x69;&#x6c;&#46;&#x63;&#111;&#109;">&#x61;&#107;&#x73;&#x68;&#x61;&#121;&#46;&#114;&#x61;&#110;&#103;&#110;&#101;&#107;&#97;&#x72;&#x40;&#x67;&#x6d;&#x61;&#105;&#108;&#46;&#99;&#x6f;&#x6d;</a>
+<p>googleplus_user: <a href="&#109;&#x61;&#105;&#x6c;&#116;&#111;&#x3a;&#97;&#107;&#x73;&#x68;&#97;&#121;&#x2e;&#x72;&#97;&#110;&#103;&#x6e;&#x65;&#107;&#x61;&#114;&#x40;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#97;&#107;&#x73;&#x68;&#97;&#x79;&#x2e;&#x72;&#x61;&#x6e;&#x67;&#110;&#x65;&#x6b;&#97;&#x72;&#x40;&#103;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#111;&#109;</a>
 googleplus_hidden: true
 ```</p>
 

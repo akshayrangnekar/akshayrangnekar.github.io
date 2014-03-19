@@ -8,27 +8,39 @@
         <loc>
             http://akshayrangnekar.github.io/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/
         </loc>
-        <lastmod>2014-03-18T15:09:01+00:00</lastmod>
+        <lastmod>2014-03-19T21:13:24+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://akshayrangnekar.github.io/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/
         </loc>
-        <lastmod>2014-03-18T15:09:10+00:00</lastmod>
+        <lastmod>2014-03-18T20:48:26+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/
         </loc>
-        <lastmod>2014-03-18T14:54:00+00:00</lastmod>
+        <lastmod>2014-03-19T20:53:06+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/
+        </loc>
+        <lastmod>2014-03-19T23:54:34+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/
+        </loc>
+        <lastmod>2014-03-19T23:55:27+00:00</lastmod>
     </url>
     <url>
         <loc>http://akshayrangnekar.github.io/blog/archives/</loc>
-        <lastmod>2014-03-18T15:09:10+00:00</lastmod>
+        <lastmod>2014-03-19T23:55:27+00:00</lastmod>
     </url>
     <url>
         <loc>http://akshayrangnekar.github.io/</loc>
-        <lastmod>2014-03-18T15:09:10+00:00</lastmod>
+        <lastmod>2014-03-19T23:55:27+00:00</lastmod>
     </url>
     <url>
         <loc>http://akshayrangnekar.github.io/robots.txt</loc>

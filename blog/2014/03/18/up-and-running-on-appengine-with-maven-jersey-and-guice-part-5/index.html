@@ -1,0 +1,819 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Up and Running on AppEngine With Maven, Jersey and Guice - Part 5 - Akshay's Programming Blog</title>
+  <meta name="author" content="Akshay Rangnekar">
+
+  
+  <meta name="description" content="This is part five of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice. Part 4 was around getting &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Akshay's Programming Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!-- <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href='//fonts.googleapis.com/css?family=Droid+Sans|Raleway:900' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+    <img class="left" src="http://www.gravatar.com/avatar/712764174a1641db425b971456e63015?r=x&s=700" width="50" height="50" title="me" alt="me">
+  <h1><a href="/">Akshay's Programming Blog</a></h1>
+  
+    <h2>Notes on Coding</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:akshayrangnekar.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Up and Running on AppEngine With Maven, Jersey and Guice - Part 5</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-18T18:23:59+00:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This is part five of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.</p>
+
+<p><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/">Part 4</a> was around getting Jersey set up with JSON and Freemarker. This part works through getting Persistence working with JPA.</p>
+
+<!-- more -->
+
+
+<h2>Working with the Datastore</h2>
+
+<p>The final part of this tutorial is getting data saved and retrieved from the AppEngine Datastore. There are a number of options for tools to help you do this including the Java Persistence API (JPA), Java Data Objects (JDO), Objectify or the Datastore&rsquo;s Low-level API. For reasons of familiarity I&rsquo;ve chosen to proceed with JPA. There are many discussions out there as to the best option, but the short summary is that it really is dependent on your application and application needs. This was again a fairly complex task to get right, and a big thank you to the author of <a href="http://www.loop81.com/2013/02/gae-google-app-engine-jpa2-maven-and.html">this piece</a> which put me in the right direction.</p>
+
+<p>To get started with JPA the first thing we need is a big bunch of dependencies.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.datanucleus<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>datanucleus-api-jpa<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>${datanucleus.jpa.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.datanucleus<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>datanucleus-core<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>${datanucleus.jpa.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>com.google.appengine.orm<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>datanucleus-appengine<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>2.1.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;exclusions&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;exclusion&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>org.datanucleus<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>datanucleus-enhancer<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/exclusion&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/exclusions&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>javax.jdo<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>jdo-api<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>3.0.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.apache.geronimo.specs<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>geronimo-jpa_2.0_spec<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>1.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.hibernate<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>hibernate-validator<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>5.1.0.Final<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The one thing to note is note is that from the AppEngine ORM package, we&rsquo;re excluding the built-in datanucleus enhancer. This is what takes your <code>@Entity</code> annotated classes and adds to them to make them databaseable. Instead we&rsquo;re going to use the <code>maven-datanucleus-plugin</code> to do the enhancement.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.datanucleus<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>maven-datanucleus-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>${datanucleus.jpa.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;api&gt;</span>JPA<span class="nt">&lt;/api&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;mappingIncludes&gt;</span>**/entities/*.class<span class="nt">&lt;/mappingIncludes&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;verbose&gt;</span>true<span class="nt">&lt;/verbose&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>org.datanucleus<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>datanucleus-core<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;version&gt;</span>${datanucleus.jpa.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;phase&gt;</span>compile<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;goals&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;goal&gt;</span>enhance<span class="nt">&lt;/goal&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/goals&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you&rsquo;re working with Eclipse and the m2eclipse plugin, this will work from the command line, but not eclipse. To proceed in Eclipse, configure the m2e plugin to allow execution of the datanucleus plugin.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;pluginManagement&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>org.eclipse.m2e<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>lifecycle-mapping<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;version&gt;</span>1.0.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;lifecycleMappingMetadata&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;pluginExecutions&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;pluginExecution&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;pluginExecutionFilter&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;groupId&gt;</span>org.datanucleus<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;artifactId&gt;</span>maven-datanucleus-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;versionRange&gt;</span>${datanucleus.jpa.version}<span class="nt">&lt;/versionRange&gt;</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="nt">&lt;goals&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;goal&gt;</span>enhance<span class="nt">&lt;/goal&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/goals&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/pluginExecutionFilter&gt;</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="nt">&lt;action&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;execute</span> <span class="nt">&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;runOnIncremental&gt;</span>false<span class="nt">&lt;/runOnIncremental&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/execute &gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/action&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/pluginExecution&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/pluginExecutions&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/lifecycleMappingMetadata&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'><span class="nt">&lt;/pluginManagement&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now if you run the <code>compile</code> goal, you should see log messages indicating that DataNucleus has run. Some of these may appear a little scary, since the logging levels from DataNucleus leave a little to be desired, but look for the message <code>DataNucleus Enhancer completed with success</code> and you should be good.</p>
+
+<p>Now, let&rsquo;s actually give DataNucleus something to do. Here&rsquo;s my incredibly simple test entity.</p>
+
+<figure class='code'><figcaption><span> (SimpleTestEntity.java)</span> <a href='/downloads/code/5/SimpleTestEntity.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">entities</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">javax</span><span class="o">.</span><span class="na">persistence</span><span class="o">.</span><span class="na">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Date</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.persistence.Entity</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.persistence.GeneratedValue</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.persistence.Id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Entity</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SimpleTestEntity</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Id</span>
+</span><span class='line'>    <span class="nd">@GeneratedValue</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="n">IDENTITY</span><span class="o">)</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Date</span> <span class="n">creationDate</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">SimpleTestEntity</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Long</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Date</span> <span class="nf">getCreationDate</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">creationDate</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&rsquo;s create a new couple of methods in the Resource to exercise this entity &ndash; one to create it, and one to retrieve it from the datastore.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@GET</span>
+</span><span class='line'><span class="nd">@Produces</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_HTML</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@Path</span><span class="o">(</span><span class="s">&quot;/persist&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@Template</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;/foo.ftl&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">persist</span><span class="o">(</span><span class="nd">@QueryParam</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">)</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="nd">@QueryParam</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">)</span> <span class="n">String</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+</span><span class='line'>  <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;foo&quot;</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;bar&quot;</span><span class="o">,</span> <span class="n">message</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">SimpleTestEntity</span> <span class="n">ste</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleTestEntity</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">ste</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+</span><span class='line'>  
+</span><span class='line'>    <span class="n">EntityManagerFactory</span> <span class="n">factory</span> <span class="o">=</span> <span class="n">Persistence</span><span class="o">.</span><span class="na">createEntityManagerFactory</span><span class="o">(</span><span class="s">&quot;transactions-optional&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">EntityManager</span> <span class="n">entityManager</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">createEntityManager</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">entityManager</span><span class="o">.</span><span class="na">getTransaction</span><span class="o">().</span><span class="na">begin</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">ste</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">entityManager</span><span class="o">.</span><span class="na">getTransaction</span><span class="o">().</span><span class="na">commit</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="n">map</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@GET</span>
+</span><span class='line'><span class="nd">@Produces</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_HTML</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@Path</span><span class="o">(</span><span class="s">&quot;/retrieve&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@Template</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;/foo.ftl&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">retrieve</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+</span><span class='line'>  
+</span><span class='line'>    <span class="n">EntityManagerFactory</span> <span class="n">factory</span> <span class="o">=</span> <span class="n">Persistence</span><span class="o">.</span><span class="na">createEntityManagerFactory</span><span class="o">(</span><span class="s">&quot;transactions-optional&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">EntityManager</span> <span class="n">entityManager</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">createEntityManager</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">entityManager</span><span class="o">.</span><span class="na">getTransaction</span><span class="o">().</span><span class="na">begin</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Query</span> <span class="n">q</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">&quot;select t from &quot;</span> <span class="o">+</span> <span class="n">SimpleTestEntity</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot; t&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="na">getResultList</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;foo&quot;</span><span class="o">,</span> <span class="s">&quot;Number of Entries&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;bar&quot;</span><span class="o">,</span> <span class="s">&quot;The number of database entries is: &quot;</span> <span class="o">+</span> <span class="n">list</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">entityManager</span><span class="o">.</span><span class="na">getTransaction</span><span class="o">().</span><span class="na">commit</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="n">map</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Before everything will work nicely, we also need to create a <code>persistence.xml</code> file. This file goes in your <code>src/main/resources</code> directory, in a subdirectory named <code>META-INF</code>.</p>
+
+<figure class='code'><figcaption><span> (persistence.xml)</span> <a href='/downloads/code/5/persistence.xml'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
+</span><span class='line'><span class="nt">&lt;persistence</span> <span class="na">xmlns=</span><span class="s">&quot;http://java.sun.com/xml/ns/persistence&quot;</span>
+</span><span class='line'>             <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>             <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://java.sun.com/xml/ns/persistence</span>
+</span><span class='line'><span class="s">        http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;persistence-unit</span> <span class="na">name=</span><span class="s">&quot;transactions-optional&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;provider&gt;</span>org.datanucleus.api.jpa.PersistenceProviderImpl<span class="nt">&lt;/provider&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;class&gt;</span>com.listerly.entities.SimpleTestEntity<span class="nt">&lt;/class&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;exclude-unlisted-classes&gt;</span>true<span class="nt">&lt;/exclude-unlisted-classes&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;properties&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;javax.persistence.query.timeout&quot;</span> <span class="na">value=</span><span class="s">&quot;5000&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.appengine.datastoreReadConsistency&quot;</span> <span class="na">value=</span><span class="s">&quot;STRONG&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.appengine.datastoreEnableXGTransactions&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.datastoreWriteTimeout&quot;</span> <span class="na">value=</span><span class="s">&quot;5000&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.NontransactionalRead&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.NontransactionalWrite&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.ConnectionURL&quot;</span> <span class="na">value=</span><span class="s">&quot;appengine&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/properties&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/persistence-unit&gt;</span>
+</span><span class='line'><span class="nt">&lt;/persistence&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now if we run the <code>/Hey/persist</code> method a couple of times, we should be adding entities to our datastore:</p>
+
+<p><img src="/images/postimages/5/persist.png"></p>
+
+<p>And to be sure, load the <code>/Hey/retrieve</code> URL every few times and make sure you get the expected number:</p>
+
+<p><img src="/images/postimages/5/retrieveNumber.png"></p>
+
+<p>Deploy to appengine using <code>mvn appengine:update</code> and make sure that everything works the same with the real datastore.</p>
+
+<p>That should all be good. Now lets use the built in datastore viewer to make sure that our objects look right. For the real datastore you can visit <code>appengine.google.com</code> and click &ldquo;Datastore Viewer&rdquo; from the left hand navigation bar. For the devserver, you should be able to visit <code>http://localhost:8080/_ah/admin/</code> to do the same thing. Unfortunately, if you try it now you&rsquo;ll get a 404 when you try to access it. The reason? Jersey thinks it should know how to respond to that URL, and it doesn&rsquo;t. This is only a problem on the devserver, but it&rsquo;s something that we should fix anyway. Let&rsquo;s tell Jersey that it isn&rsquo;t responsible for URLs that start with <code>/_ah</code>.</p>
+
+<p>First we create our own Filter, that subclasses the Jersey filter (unfortunately named <code>ServletContainer</code> because it can be used in multiple ways):</p>
+
+<figure class='code'><figcaption><span> (JerseyFilter.java)</span> <a href='/downloads/code/5/JerseyFilter.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">config</span><span class="o">.</span><span class="na">jersey</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.glassfish.jersey.servlet.ServletContainer</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.FilterChain</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Used to filter out GAE reserved URLs</span>
+</span><span class='line'><span class="cm"> * See: https://developers.google.com/appengine/docs/java/config/appconfig</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;serial&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JerseyFilter</span> <span class="kd">extends</span> <span class="n">ServletContainer</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">chain</span><span class="o">)</span>
+</span><span class='line'>            <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">String</span> <span class="n">path</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">getServletPath</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">path</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&quot;/_ah/&quot;</span><span class="o">)</span> <span class="o">||</span> <span class="n">path</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;/form&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">chain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">req</span><span class="o">,</span> <span class="n">res</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kd">super</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">req</span><span class="o">,</span> <span class="n">res</span><span class="o">,</span> <span class="n">chain</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then in our <code>web.xml</code> we use our new class as the <code>filter-class</code> instead of <code>ServletContainer</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;filter-class&gt;</span>com.listerly.config.jersey.JerseyFilter<span class="nt">&lt;/filter-class&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now load up the two datastore viewers and everything should look as you wanted.</p>
+
+<p><img src="/images/postimages/5/datastoreViewerLocal.png"></p>
+
+<p><img src="/images/postimages/5/datastoreViewerAppengine.png"></p>
+
+<h2>Making  JPA easy</h2>
+
+<p>Part 5B of this guide was going to be around making JPA easier to use &ndash; showing how to create abstract DAOs and concrete implementations for your persistent objects; showing how to make the EntityManager injectable; showing how you could use a filter to start and commit the transaction. However after trying a couple of different approaches out, it became clear that everyone is going to want something slightly different here. That my approach is pretty much guaranteed not to be your approach. So instead, I&rsquo;ve decided to stop the tutorial here.</p>
+
+<h2>Final words</h2>
+
+<p>The final source code for this tutorial is available from github here <a href="https://github.com/akshayrangnekar/gaemavenjerseyguice">https://github.com/akshayrangnekar/gaemavenjerseyguice</a> &ndash; please drop me a line on twitter (@akshayr) if you run into any problems, or find something that I&rsquo;ve done wrong.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Akshay Rangnekar</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-18T18:23:59+00:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/appengine/'>AppEngine</a>, <a class='category' href='/blog/categories/jpa/'>JPA</a>, <a class='category' href='/blog/categories/java/'>Java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/" data-via="akshayr" data-counturl="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/" title="Previous Post: Up and running on AppEngine with Maven, Jersey and Guice - Part 4">&laquo; Up and running on AppEngine with Maven, Jersey and Guice - Part 4</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 5</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 4</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/akshayrangnekar">@akshayrangnekar</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'akshayrangnekar',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus googleplus-hidden">
+  <h1>
+    <a href="https://plus.google.com/akshay.rangnekar@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Akshay Rangnekar -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

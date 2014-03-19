@@ -94,12 +94,14 @@
 
 <div class="entry-content"><p>After 10 years away from proper coding, I&rsquo;m building a new application. I&rsquo;ll talk more about Listerly and some of my design choices at a later time, but this post should help document the process so if anyone else wants this type of a setup it&rsquo;s easy to get going.</p>
 
-<p>This application has many moving pieces, and to make my life easier I&rsquo;m going to have some pretty awesome tools do most of the heavy lifting for me. In no particular order, the key pieces that I&rsquo;ll be using include Google AppEngine (PAAS), maven (build), git/github (source control), Jersey (RESTful services), Guice (dependency injection), Freemarker (templates) and JPA (persistence).</p>
+<p>This application has many moving pieces, and to make my life easier I&rsquo;m going to have some pretty awesome tools do most of the heavy lifting for me. In no particular order, the key pieces that I&rsquo;ll be using include Google AppEngine (PAAS), maven (build), git/github (source control), Jersey (RESTful services), Guice (dependency injection), Freemarker (templates), Jackson (JSON) and JPA (persistence).</p>
 
 <ul>
 <li><a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Part 1</a> gets you set up with maven and a blank repository on github</li>
 <li><a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Part 2</a> gets you to the point of having a working web application running locally and deployed on AppEngine.</li>
 <li><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Part 3</a> adds Jersey and Guice to the mix.</li>
+<li><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/">Part 4</a> makes Jersey useful by demonstrating how to use Freemarker and Jackson to return HTML and JSON respectively.</li>
+<li><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/">Part 5</a> will set up persistence to the Google DataStore using JPA.</li>
 </ul>
 
 
@@ -293,6 +295,14 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 5</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 4</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 3</a>
       </li>
     
@@ -302,10 +312,6 @@
     
       <li class="post">
         <a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 1</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/13/setting-up-octopress/">Setting Up Octopress</a>
       </li>
     
   </ul>

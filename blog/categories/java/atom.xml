@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | Akshay's Programming Blog]]></title>
   <link href="http://akshayrangnekar.github.io/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://akshayrangnekar.github.io/"/>
-  <updated>2014-03-18T15:09:41+00:00</updated>
+  <updated>2014-03-19T23:56:21+00:00</updated>
   <id>http://akshayrangnekar.github.io/</id>
   <author>
     <name><![CDATA[Akshay Rangnekar]]></name>
@@ -12,6 +12,718 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Up and Running on AppEngine With Maven, Jersey and Guice - Part 5]]></title>
+    <link href="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/"/>
+    <updated>2014-03-18T18:23:59+00:00</updated>
+    <id>http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5</id>
+    <content type="html"><![CDATA[<p>This is part five of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.</p>
+
+<p><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/">Part 4</a> was around getting Jersey set up with JSON and Freemarker. This part works through getting Persistence working with JPA.</p>
+
+<!-- more -->
+
+
+<h2>Working with the Datastore</h2>
+
+<p>The final part of this tutorial is getting data saved and retrieved from the AppEngine Datastore. There are a number of options for tools to help you do this including the Java Persistence API (JPA), Java Data Objects (JDO), Objectify or the Datastore&rsquo;s Low-level API. For reasons of familiarity I&rsquo;ve chosen to proceed with JPA. There are many discussions out there as to the best option, but the short summary is that it really is dependent on your application and application needs. This was again a fairly complex task to get right, and a big thank you to the author of <a href="http://www.loop81.com/2013/02/gae-google-app-engine-jpa2-maven-and.html">this piece</a> which put me in the right direction.</p>
+
+<p>To get started with JPA the first thing we need is a big bunch of dependencies.
+``` xml
+<dependency>
+  <groupId>org.datanucleus</groupId>
+  <artifactId>datanucleus-api-jpa</artifactId>
+  <version>${datanucleus.jpa.version}</version>
+</dependency></p>
+
+<p><dependency>
+  <groupId>org.datanucleus</groupId>
+  <artifactId>datanucleus-core</artifactId>
+  <version>${datanucleus.jpa.version}</version>
+</dependency></p>
+
+<p><dependency>
+  <groupId>com.google.appengine.orm</groupId>
+  <artifactId>datanucleus-appengine</artifactId>
+  <version>2.1.1</version></p>
+
+<p>  <exclusions></p>
+
+<pre><code>&lt;exclusion&gt;
+  &lt;groupId&gt;org.datanucleus&lt;/groupId&gt;
+  &lt;artifactId&gt;datanucleus-enhancer&lt;/artifactId&gt;
+&lt;/exclusion&gt;
+</code></pre>
+
+<p>  </exclusions>
+</dependency></p>
+
+<p><dependency>
+  <groupId>javax.jdo</groupId>
+  <artifactId>jdo-api</artifactId>
+  <version>3.0.1</version>
+</dependency></p>
+
+<p><dependency>
+  <groupId>org.apache.geronimo.specs</groupId>
+  <artifactId>geronimo-jpa_2.0_spec</artifactId>
+  <version>1.1</version>
+</dependency></p>
+
+<p><dependency></p>
+
+<pre><code>&lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+&lt;artifactId&gt;hibernate-validator&lt;/artifactId&gt;
+&lt;version&gt;5.1.0.Final&lt;/version&gt;
+</code></pre>
+
+<p></dependency>
+```</p>
+
+<p>The one thing to note is note is that from the AppEngine ORM package, we&rsquo;re excluding the built-in datanucleus enhancer. This is what takes your <code>@Entity</code> annotated classes and adds to them to make them databaseable. Instead we&rsquo;re going to use the <code>maven-datanucleus-plugin</code> to do the enhancement.
+``` xml
+<plugin>
+  <groupId>org.datanucleus</groupId>
+  <artifactId>maven-datanucleus-plugin</artifactId>
+  <version>${datanucleus.jpa.version}</version></p>
+
+<p>  <configuration></p>
+
+<pre><code>&lt;api&gt;JPA&lt;/api&gt;
+&lt;mappingIncludes&gt;**/entities/*.class&lt;/mappingIncludes&gt;
+&lt;verbose&gt;true&lt;/verbose&gt;
+</code></pre>
+
+<p>  </configuration></p>
+
+<p>  <dependencies></p>
+
+<pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;org.datanucleus&lt;/groupId&gt;
+  &lt;artifactId&gt;datanucleus-core&lt;/artifactId&gt;
+  &lt;version&gt;${datanucleus.jpa.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>  </dependencies></p>
+
+<p>  <executions></p>
+
+<pre><code>&lt;execution&gt;   
+  &lt;phase&gt;compile&lt;/phase&gt;
+  &lt;goals&gt;
+    &lt;goal&gt;enhance&lt;/goal&gt;
+  &lt;/goals&gt;
+&lt;/execution&gt;
+</code></pre>
+
+<p>  </executions>
+</plugin>
+```</p>
+
+<p>If you&rsquo;re working with Eclipse and the m2eclipse plugin, this will work from the command line, but not eclipse. To proceed in Eclipse, configure the m2e plugin to allow execution of the datanucleus plugin.
+``` xml
+<pluginManagement>
+  <plugins></p>
+
+<pre><code>&lt;plugin&gt;
+  &lt;groupId&gt;org.eclipse.m2e&lt;/groupId&gt;
+  &lt;artifactId&gt;lifecycle-mapping&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0&lt;/version&gt;
+
+  &lt;configuration&gt;
+    &lt;lifecycleMappingMetadata&gt;
+      &lt;pluginExecutions&gt;
+        &lt;pluginExecution&gt;
+          &lt;pluginExecutionFilter&gt;
+            &lt;groupId&gt;org.datanucleus&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-datanucleus-plugin&lt;/artifactId&gt;
+            &lt;versionRange&gt;${datanucleus.jpa.version}&lt;/versionRange&gt;
+
+            &lt;goals&gt;
+              &lt;goal&gt;enhance&lt;/goal&gt;
+            &lt;/goals&gt;
+          &lt;/pluginExecutionFilter&gt;
+
+          &lt;action&gt;
+            &lt;execute &gt;
+              &lt;runOnIncremental&gt;false&lt;/runOnIncremental&gt;
+            &lt;/execute &gt;
+          &lt;/action&gt;
+        &lt;/pluginExecution&gt;
+      &lt;/pluginExecutions&gt;
+    &lt;/lifecycleMappingMetadata&gt;
+  &lt;/configuration&gt;
+&lt;/plugin&gt;
+</code></pre>
+
+<p>  </plugins>
+</pluginManagement>
+```</p>
+
+<p>Now if you run the <code>compile</code> goal, you should see log messages indicating that DataNucleus has run. Some of these may appear a little scary, since the logging levels from DataNucleus leave a little to be desired, but look for the message <code>DataNucleus Enhancer completed with success</code> and you should be good.</p>
+
+<p>Now, let&rsquo;s actually give DataNucleus something to do. Here&rsquo;s my incredibly simple test entity.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (SimpleTestEntity.java)</span> <a href='/downloads/code/5/SimpleTestEntity.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">entities</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">javax</span><span class="o">.</span><span class="na">persistence</span><span class="o">.</span><span class="na">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Date</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.persistence.Entity</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.persistence.GeneratedValue</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.persistence.Id</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Entity</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SimpleTestEntity</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="nd">@Id</span>
+</span><span class='line'>    <span class="nd">@GeneratedValue</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="n">IDENTITY</span><span class="o">)</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Date</span> <span class="n">creationDate</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">SimpleTestEntity</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="kd">public</span> <span class="n">Long</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="kd">public</span> <span class="n">Date</span> <span class="nf">getCreationDate</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">return</span> <span class="n">creationDate</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Let&rsquo;s create a new couple of methods in the Resource to exercise this entity &ndash; one to create it, and one to retrieve it from the datastore.
+``` java
+@GET
+@Produces(MediaType.TEXT_HTML)
+@Path(&ldquo;/persist&rdquo;)
+@Template(name=&ldquo;/foo.ftl&rdquo;)
+public Map&lt;String, Object> persist(@QueryParam(&ldquo;name&rdquo;) String name, @QueryParam(&ldquo;message&rdquo;) String message) {</p>
+
+<pre><code>Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+map.put("foo", name);
+map.put("bar", message);
+SimpleTestEntity ste = new SimpleTestEntity();
+ste.setName(name);
+
+EntityManagerFactory factory = Persistence.createEntityManagerFactory("transactions-optional");
+EntityManager entityManager = factory.createEntityManager();
+entityManager.getTransaction().begin();
+entityManager.persist(ste);
+entityManager.getTransaction().commit();
+
+return map;
+</code></pre>
+
+<p>}</p>
+
+<p>@GET
+@Produces(MediaType.TEXT_HTML)
+@Path(&ldquo;/retrieve&rdquo;)
+@Template(name=&ldquo;/foo.ftl&rdquo;)
+public Map&lt;String, Object> retrieve() {</p>
+
+<pre><code>Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+
+EntityManagerFactory factory = Persistence.createEntityManagerFactory("transactions-optional");
+EntityManager entityManager = factory.createEntityManager();
+entityManager.getTransaction().begin();
+Query q = entityManager.createQuery("select t from " + SimpleTestEntity.class.getSimpleName() + " t");
+List&lt;?&gt; list = q.getResultList();
+map.put("foo", "Number of Entries");
+map.put("bar", "The number of database entries is: " + list.size());
+
+entityManager.getTransaction().commit();
+
+return map;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Before everything will work nicely, we also need to create a <code>persistence.xml</code> file. This file goes in your <code>src/main/resources</code> directory, in a subdirectory named <code>META-INF</code>.
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (persistence.xml)</span> <a href='/downloads/code/5/persistence.xml'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
+</span><span class='line'><span class="nt">&lt;persistence</span> <span class="na">xmlns=</span><span class="s">&quot;http://java.sun.com/xml/ns/persistence&quot;</span>
+</span><span class='line'>             <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>             <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://java.sun.com/xml/ns/persistence</span>
+</span><span class='line'><span class="s">        http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;persistence-unit</span> <span class="na">name=</span><span class="s">&quot;transactions-optional&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;provider&gt;</span>org.datanucleus.api.jpa.PersistenceProviderImpl<span class="nt">&lt;/provider&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;class&gt;</span>com.listerly.entities.SimpleTestEntity<span class="nt">&lt;/class&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;exclude-unlisted-classes&gt;</span>true<span class="nt">&lt;/exclude-unlisted-classes&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;properties&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;javax.persistence.query.timeout&quot;</span> <span class="na">value=</span><span class="s">&quot;5000&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.appengine.datastoreReadConsistency&quot;</span> <span class="na">value=</span><span class="s">&quot;STRONG&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.appengine.datastoreEnableXGTransactions&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.datastoreWriteTimeout&quot;</span> <span class="na">value=</span><span class="s">&quot;5000&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.NontransactionalRead&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.NontransactionalWrite&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;datanucleus.ConnectionURL&quot;</span> <span class="na">value=</span><span class="s">&quot;appengine&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/properties&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/persistence-unit&gt;</span>
+</span><span class='line'><span class="nt">&lt;/persistence&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Now if we run the <code>/Hey/persist</code> method a couple of times, we should be adding entities to our datastore:</p>
+
+<p><img src="/images/postimages/5/persist.png"></p>
+
+<p>And to be sure, load the <code>/Hey/retrieve</code> URL every few times and make sure you get the expected number:</p>
+
+<p><img src="/images/postimages/5/retrieveNumber.png"></p>
+
+<p>Deploy to appengine using <code>mvn appengine:update</code> and make sure that everything works the same with the real datastore.</p>
+
+<p>That should all be good. Now lets use the built in datastore viewer to make sure that our objects look right. For the real datastore you can visit <code>appengine.google.com</code> and click &ldquo;Datastore Viewer&rdquo; from the left hand navigation bar. For the devserver, you should be able to visit <code>http://localhost:8080/_ah/admin/</code> to do the same thing. Unfortunately, if you try it now you&rsquo;ll get a 404 when you try to access it. The reason? Jersey thinks it should know how to respond to that URL, and it doesn&rsquo;t. This is only a problem on the devserver, but it&rsquo;s something that we should fix anyway. Let&rsquo;s tell Jersey that it isn&rsquo;t responsible for URLs that start with <code>/_ah</code>.</p>
+
+<p>First we create our own Filter, that subclasses the Jersey filter (unfortunately named <code>ServletContainer</code> because it can be used in multiple ways):</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (JerseyFilter.java)</span> <a href='/downloads/code/5/JerseyFilter.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">config</span><span class="o">.</span><span class="na">jersey</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.glassfish.jersey.servlet.ServletContainer</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.FilterChain</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Used to filter out GAE reserved URLs</span>
+</span><span class='line'><span class="cm"> * See: https://developers.google.com/appengine/docs/java/config/appconfig</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;serial&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JerseyFilter</span> <span class="kd">extends</span> <span class="n">ServletContainer</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">chain</span><span class="o">)</span>
+</span><span class='line'>            <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">String</span> <span class="n">path</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">getServletPath</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">path</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&quot;/_ah/&quot;</span><span class="o">)</span> <span class="o">||</span> <span class="n">path</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;/form&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">chain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">req</span><span class="o">,</span> <span class="n">res</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kd">super</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">req</span><span class="o">,</span> <span class="n">res</span><span class="o">,</span> <span class="n">chain</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Then in our <code>web.xml</code> we use our new class as the <code>filter-class</code> instead of <code>ServletContainer</code>.</p>
+
+<p><code>xml
+&lt;filter-class&gt;com.listerly.config.jersey.JerseyFilter&lt;/filter-class&gt;
+</code></p>
+
+<p>Now load up the two datastore viewers and everything should look as you wanted.</p>
+
+<p><img src="/images/postimages/5/datastoreViewerLocal.png"></p>
+
+<p><img src="/images/postimages/5/datastoreViewerAppengine.png"></p>
+
+<h2>Making  JPA easy</h2>
+
+<p>Part 5B of this guide was going to be around making JPA easier to use &ndash; showing how to create abstract DAOs and concrete implementations for your persistent objects; showing how to make the EntityManager injectable; showing how you could use a filter to start and commit the transaction. However after trying a couple of different approaches out, it became clear that everyone is going to want something slightly different here. That my approach is pretty much guaranteed not to be your approach. So instead, I&rsquo;ve decided to stop the tutorial here.</p>
+
+<h2>Final words</h2>
+
+<p>The final source code for this tutorial is available from github here <a href="https://github.com/akshayrangnekar/gaemavenjerseyguice">https://github.com/akshayrangnekar/gaemavenjerseyguice</a> &ndash; please drop me a line on twitter (@akshayr) if you run into any problems, or find something that I&rsquo;ve done wrong.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Up and Running on AppEngine With Maven, Jersey and Guice - Part 4]]></title>
+    <link href="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/"/>
+    <updated>2014-03-18T15:42:52+00:00</updated>
+    <id>http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4</id>
+    <content type="html"><![CDATA[<p>This is part four of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.</p>
+
+<p><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Part 3</a> got us working with Jersey and Guice. Part 4 will make Jersey more useful by adding JSON and freemarker templates.</p>
+
+<!-- more -->
+
+
+<p>While our Jersey POJOs are nicely returning String messages at the moment, that&rsquo;s really not particularly useful in the real world. Most apps that I build are going to return one of three things &ndash; static files (which are already easily handled), HTML, or JSON. For HTML, I&rsquo;ve chosen to use Freemarker templates, which Jersey supports JSON as long as you give it serialization libraries.</p>
+
+<h2>Getting JSON working</h2>
+
+<p>Getting JSON working is actually fairly simple. First, lets make sure that we&rsquo;re importing the Jackson library which works has a JAXRS provider that Jersey uses:
+``` xml</p>
+
+<pre><code>    &lt;dependency&gt;
+        &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+        &lt;artifactId&gt;jackson-annotations&lt;/artifactId&gt;
+        &lt;version&gt;2.2.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+        &lt;artifactId&gt;jackson-core&lt;/artifactId&gt;
+        &lt;version&gt;2.2.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+        &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+        &lt;version&gt;2.2.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.fasterxml.jackson.jaxrs&lt;/groupId&gt;
+        &lt;artifactId&gt;jackson-jaxrs-json-provider&lt;/artifactId&gt;
+        &lt;version&gt;2.2.0&lt;/version&gt;
+    &lt;/dependency&gt;
+</code></pre>
+
+<p>```</p>
+
+<p>Then, we simply create a new method in our Resource:
+``` java
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+@Path(&ldquo;/json&rdquo;)
+public Object json() {</p>
+
+<pre><code>SimpleReturnObject ret = new SimpleReturnObject();
+
+ret.setFruit("Apple");
+ret.setHome("Hong Kong");
+
+return ret;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The <code>@Produces</code> annotation is enough to tell Jersey to use Jackson to serialize the data. We can then return any Object and the JSON representation will be sent down. Here&rsquo;s my very simple return object:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (SimpleReturnObject.java)</span> <a href='/downloads/code/4/SimpleReturnObject.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">api</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SimpleReturnObject</span> <span class="o">{</span>
+</span><span class='line'>	<span class="kd">private</span> <span class="n">String</span> <span class="n">fruit</span><span class="o">;</span>
+</span><span class='line'>	<span class="kd">private</span> <span class="n">String</span> <span class="n">home</span><span class="o">;</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getFruit</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">return</span> <span class="n">fruit</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFruit</span><span class="o">(</span><span class="n">String</span> <span class="n">fruit</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">this</span><span class="o">.</span><span class="na">fruit</span> <span class="o">=</span> <span class="n">fruit</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getHome</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">return</span> <span class="n">home</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setHome</span><span class="o">(</span><span class="n">String</span> <span class="n">home</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">this</span><span class="o">.</span><span class="na">home</span> <span class="o">=</span> <span class="n">home</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>When we access the <code>/Hey/json</code> path, we get exactly what we would want. This works for as simple or complex as you want. If Jackson can handle them (and it can handle most things), you can return them.</p>
+
+<p><img src="/images/postimages/4/heyJson.png"></p>
+
+<h2>Getting Freemarker working</h2>
+
+<p>Phew. After the miserale nightmare involved in getting Jersey working, it&rsquo;s nice that JSON was so easy. Since we&rsquo;ve already included some of the Freemarker libraries in the POM in Part 3, hopefully Freemarker will be too.</p>
+
+<p>The first thing I noticed when trying to get Freemarker working was a compile error when trying to define a <code>Map&lt;String, Object&gt;</code>. Clearly I had forgotten to do some housekeeping in my POM so we were using an ancient version of Java. Add the compiler configuration to your POM to compile to Java 1.7 (Java 7). AppEngine is happy with classes compiled against that target version.
+``` xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <version>3.1</version>
+  <configuration></p>
+
+<pre><code>&lt;source&gt;1.7&lt;/source&gt;
+&lt;target&gt;1.7&lt;/target&gt;
+</code></pre>
+
+<p>  </configuration>
+</plugin>
+```</p>
+
+<p>Next, as I mentioned in Part 2, I like to keep my templates in their own <code>src</code> directory. You don&rsquo;t have to do this &ndash; you can put them in <code>src/main/resources</code> if you like, but I don&rsquo;t like to mix my properties files and persistence.xml (which will come in Part 5) with templates which are very different types of files. So I simply tell Maven that I have a second resource directory, in <code>src/main/templates</code>.
+``` xml
+<resources>
+  <resource></p>
+
+<pre><code>&lt;directory&gt;/Users/akshay/Dev/Listerly/listerly/src/main/resources&lt;/directory&gt;
+</code></pre>
+
+<p>  </resource>
+  <resource></p>
+
+<pre><code>&lt;directory&gt;/Users/akshay/Dev/Listerly/listerly/src/main/templates&lt;/directory&gt;
+</code></pre>
+
+<p>  </resource>
+</resources>
+```</p>
+
+<p>Next, we need to create a class that will load our templates from the ServletContext or Classpath. Here&rsquo;s a simple implementation:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (TemplateObjectFactory.java)</span> <a href='/downloads/code/4/TemplateObjectFactory.java'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">config</span><span class="o">.</span><span class="na">jersey</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.inject.Inject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.ServletContext</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.google.common.collect.Lists</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">freemarker.cache.ClassTemplateLoader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">freemarker.cache.MultiTemplateLoader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">freemarker.cache.TemplateLoader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">freemarker.cache.WebappTemplateLoader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">freemarker.template.Configuration</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TemplateObjectFactory</span> <span class="kd">extends</span> <span class="n">Configuration</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Inject</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">ServletContext</span> <span class="n">servletContext</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">TemplateObjectFactory</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// Create different loaders.</span>
+</span><span class='line'>        <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">TemplateLoader</span><span class="o">&gt;</span> <span class="n">loaders</span> <span class="o">=</span> <span class="n">Lists</span><span class="o">.</span><span class="na">newArrayList</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">servletContext</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">loaders</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">WebappTemplateLoader</span><span class="o">(</span><span class="n">servletContext</span><span class="o">));</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">loaders</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">ClassTemplateLoader</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">(),</span> <span class="s">&quot;/&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">setTemplateLoader</span><span class="o">(</span><span class="k">new</span> <span class="n">MultiTemplateLoader</span><span class="o">(</span><span class="n">loaders</span><span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="k">new</span> <span class="n">TemplateLoader</span><span class="o">[</span><span class="n">loaders</span><span class="o">.</span><span class="na">size</span><span class="o">()])));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Finally, we need to configure Jersey to use this new class. In our JerseyConfiguration class constructor we set a parameter called <code>jersey.config.server.mvc.factory.freemarker</code>:
+``` java
+@Inject
+public JerseyConfiguration(ServiceLocator serviceLocator, ServletContext servletContext) {</p>
+
+<pre><code>log.info("Creating JerseyConfiguration");
+packages("com.listerly.resources");
+property("jersey.config.server.mvc.factory.freemarker", TemplateObjectFactory.class);
+register(FreemarkerMvcFeature.class);
+
+GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
+GuiceIntoHK2Bridge guiceBridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);
+guiceBridge.bridgeGuiceInjector((Injector) servletContext.getAttribute(Injector.class.getName()));
+</code></pre>
+
+<p>}
+```</p>
+
+<p>We should be all set. Let&rsquo;s create another method in our Resource. This one returns HTML, and notice how we specify the template using the <code>@Template</code> annotation. Notice also that the return type from this method is a Map of Strings to Objects. These are the objects that will then be available in our Freemarker template. For simplicity, I&rsquo;ve just added two Strings to my Map. The first is called <code>foo</code> and the second <code>bar</code>.<br/>
+``` java
+@GET
+@Produces(MediaType.TEXT_HTML)
+@Path(&ldquo;/template&rdquo;)
+@Template(name=&ldquo;/foo.ftl&rdquo;)
+public Map&lt;String, Object> template() {</p>
+
+<pre><code>Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+map.put("foo", "Akshay");
+map.put("bar", "Yo Yo Whatsup?");
+return map;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Now we create the <code>foo.ftl</code> template. Notice how easy it is to use the <code>foo</code> and <code>bar</code> parameters we <em>&ldquo;passed in&rdquo;</em> from our Resource.
+``` html foo.ftl
+&lt;!DOCTYPE html PUBLIC &ldquo;&ndash;//W3C//DTD HTML 4.01//EN&rdquo;>
+<html></p>
+
+<pre><code>&lt;head&gt;
+    &lt;title&gt;Hello ${foo}&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    You wanted to say ${bar}
+&lt;/body&gt;
+</code></pre>
+
+<p></html>
+```</p>
+
+<p>Launch the devserver and load this url (<code>/Hey/template</code>) in your browser, and you should see exactly what you would want.</p>
+
+<p><img src="/images/postimages/4/heyTemplate.png"></p>
+
+<p>Obviously there&rsquo;s a ton more you can do with Freemarker. The parameters in the map can be Collections objects and you can use Freemarkers logical constructs to loop or check for truth/ existence among other things. But those you can pick up quite easily from the <a href="http://freemarker.org/docs/index.html">Freemarker Manual</a>.</p>
+
+<p>That&rsquo;s it for Part 4. <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/">Part 5</a> will do the final piece (of this tutorial) of getting persistence configured using JPA.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Up and Running on AppEngine With Maven, Jersey and Guice - Part 3]]></title>
@@ -891,7 +1603,7 @@
 
 <p><img src="/images/postimages/3/heyFoo.png"></p>
 
-<p>Push everything to AppServer and make sure everything is fine. We&rsquo;ll be using more of Jersey and Guice in the next couple of steps as we get started on templates and persistence.</p>
+<p>Push everything to AppServer and make sure everything is fine. We&rsquo;ll be using more of Jersey and Guice in the next couple of steps as we get started on templates and persistence. <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/">Part 4</a> will build on today, getting Jersey set up with JSON and Freemarker.</p>
 ]]></content>
   </entry>
   
@@ -1463,12 +2175,14 @@ mbp:~/Dev/Listerly/listerly$ mvn jetty:run
     <id>http://akshayrangnekar.github.io/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice</id>
     <content type="html"><![CDATA[<p>After 10 years away from proper coding, I&rsquo;m building a new application. I&rsquo;ll talk more about Listerly and some of my design choices at a later time, but this post should help document the process so if anyone else wants this type of a setup it&rsquo;s easy to get going.</p>
 
-<p>This application has many moving pieces, and to make my life easier I&rsquo;m going to have some pretty awesome tools do most of the heavy lifting for me. In no particular order, the key pieces that I&rsquo;ll be using include Google AppEngine (PAAS), maven (build), git/github (source control), Jersey (RESTful services), Guice (dependency injection), Freemarker (templates) and JPA (persistence).</p>
+<p>This application has many moving pieces, and to make my life easier I&rsquo;m going to have some pretty awesome tools do most of the heavy lifting for me. In no particular order, the key pieces that I&rsquo;ll be using include Google AppEngine (PAAS), maven (build), git/github (source control), Jersey (RESTful services), Guice (dependency injection), Freemarker (templates), Jackson (JSON) and JPA (persistence).</p>
 
 <ul>
 <li><a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Part 1</a> gets you set up with maven and a blank repository on github</li>
 <li><a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Part 2</a> gets you to the point of having a working web application running locally and deployed on AppEngine.</li>
 <li><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Part 3</a> adds Jersey and Guice to the mix.</li>
+<li><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/">Part 4</a> makes Jersey useful by demonstrating how to use Freemarker and Jackson to return HTML and JSON respectively.</li>
+<li><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/">Part 5</a> will set up persistence to the Google DataStore using JPA.</li>
 </ul>
 
 
