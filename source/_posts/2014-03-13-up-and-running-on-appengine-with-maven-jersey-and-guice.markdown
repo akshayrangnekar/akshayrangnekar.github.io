@@ -7,9 +7,13 @@ categories: [AppEngine, Java, Jersey, Maven, Guice, git, github]
 ---
 After 10 years away from proper coding, I'm building a new application. I'll talk more about Listerly and some of my design choices at a later time, but this post should help document the process so if anyone else wants this type of a setup it's easy to get going.
 
+This application has many moving pieces, and to make my life easier I'm going to have some pretty awesome tools do most of the heavy lifting for me. In no particular order, the key pieces that I'll be using include Google AppEngine (PAAS), maven (build), git/github (source control), Jersey (RESTful services), Guice (dependency injection), Freemarker (templates), Jackson (JSON) and JPA (persistence).
+
 * [Part 1](/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/) gets you set up with maven and a blank repository on github
 * [Part 2](/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/) gets you to the point of having a working web application running locally and deployed on AppEngine.
-* [Part 3](/blog/2014/03/16/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/) adds Jersey, Freemarker and Guice to the mix.
+* [Part 3](/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/) adds Jersey and Guice to the mix.
+* [Part 4](/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/) makes Jersey useful by demonstrating how to use Freemarker and Jackson to return HTML and JSON respectively.
+* [Part 5](/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/) will set up persistence to the Google DataStore using JPA.
 
 <!-- more -->
 ## Create AppEngine Project ##
@@ -66,7 +70,8 @@ OS name: "mac os x", version: "10.9.2", arch: "x86_64", family: "mac"
 Go to GitHub and create a new private repository
 {% img /images/postimages/github-newrepo1.png %}	
 
-Note I've asked it to create a README for me so I can clone. Personal preference - I prefer to `clone` only rather than `init`. 
+Note I've asked it to create a README for me so I can clone. Personal preference - I prefer to `clone` only rather than `init`.
+ 
 {% img /images/postimages/github-newrepo2.png %}	
 
 {% img /images/postimages/github-newrepo3.png %}	

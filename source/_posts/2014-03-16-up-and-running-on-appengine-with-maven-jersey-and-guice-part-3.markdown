@@ -3,7 +3,7 @@ layout: post
 title: "Up and running on AppEngine with Maven, Jersey and Guice - Part 3"
 date: 2014-03-18 12:23:37 +0000
 comments: true
-categories: [AppEngine, Java, Jersey, Maven, Guice, git, github]
+categories: [AppEngine, Java, Jersey, Maven, Guice]
 ---
 This is part three of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.
 
@@ -92,4 +92,4 @@ Run the server, and everything looks good:
 
 {% img /images/postimages/3/heyFoo.png %}
 
-Push everything to AppServer and make sure everything is fine. We'll be using more of Jersey and Guice in the next couple of steps as we get started on templates and persistence.  
+Push everything to AppServer and make sure everything is fine. We'll be using more of Jersey and Guice in the next couple of steps as we get started on templates and persistence. [Part 4](/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/) will build on today, getting Jersey set up with JSON and Freemarker.

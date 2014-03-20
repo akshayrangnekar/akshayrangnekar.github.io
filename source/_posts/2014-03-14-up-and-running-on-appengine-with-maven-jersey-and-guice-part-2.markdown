@@ -3,7 +3,7 @@ layout: post
 title: "Up and running on AppEngine with Maven, Jersey and Guice - Part 2"
 date: 2014-03-14 10:52:12 +0000
 comments: true
-categories: [AppEngine, Java, Jersey, Maven, Guice, git, github]
+categories: [AppEngine, Java, Maven, git]
 ---
 This is part two of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.
 
@@ -401,4 +401,4 @@ Now if we run `mvn appengine:devserver` and visit `http://localhost:8080/hi` we 
 
 Lets try pushing it to the Google servers. Run `mvn appengine:update` and if all goes well (it should!), open a browser to `http://[app-id].appspot.com/hi`. Uh oh. Doesn't say "handrolled" for me. Looks like it's still running the old version. Fortunately, this is to be expected because AppEngine allows you to upload multiple versions of your app, but only one of them is the "default version". Lets make this version default. Visit `appengine.google.com`. Login, and then click on your application. In the left navigation bar you should see "versions". Click there, and you'll see that you have two versions deployed: `1-war` that was created by the AppEngine archetype, and `1`, which is the version we just created. Select 1, and click make default. Now if you reload your other browser window, you should see "Hello, handrolled AppEngine!". That's success for Part 2.
 
-You can choose which approach you prefer. I like the ability to have full control over my project structure so for the rest of this tutorial I'm going to go with the second approach (which the more attentive may have guessed by the fact that this has all been done on the master branch though I claim that was accidental). Add everything into git (if you're going with this approach - otherwise discard everything and merge the other branch into master) and we'll be ready to go with [Part 3](/blog/2014/03/16/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/).
+You can choose which approach you prefer. I like the ability to have full control over my project structure so for the rest of this tutorial I'm going to go with the second approach (which the more attentive may have guessed by the fact that this has all been done on the master branch though I claim that was accidental). Add everything into git (if you're going with this approach - otherwise discard everything and merge the other branch into master) and we'll be ready to go with [Part 3](/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/).
