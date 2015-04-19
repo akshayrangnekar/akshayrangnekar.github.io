@@ -1,1067 +1,306 @@
-
 <!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<html>
 <head>
   <meta charset="utf-8">
-  <title>Up and Running on AppEngine With Maven, Jersey and Guice - Part 2 - Akshay's Programming Blog</title>
-  <meta name="author" content="Akshay Rangnekar">
-
   
-  <meta name="description" content="This is part two of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice. Part 2 gets us to the point &hellip;">
+  <title>Up and running on AppEngine with Maven, Jersey and Guice - Part 2 | Development Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="This is part two of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.
+Part 2 gets us to the point of having a working web application running locall">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Up and running on AppEngine with Maven, Jersey and Guice - Part 2">
+<meta property="og:url" content="http://akshayrangnekar.github.io/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/index.html">
+<meta property="og:site_name" content="Development Notes">
+<meta property="og:description" content="This is part two of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.
+Part 2 gets us to the point of having a working web application running locall">
+<meta property="og:image" content="/images/postimages/2/dev-appengine-console1.png">
+<meta property="og:image" content="/images/postimages/2/dev-appengine-try2.png">
+<meta property="og:image" content="/images/postimages/2/dev-appengine-auth1.png">
+<meta property="og:image" content="/images/postimages/2/dev-appengine-auth2.png">
+<meta property="og:image" content="/images/postimages/2/helloworld-appengine1.png">
+<meta property="og:image" content="/images/postimages/2/helloworld-jetty.png">
+<meta property="og:image" content="/images/postimages/2/helloworld-appengine1.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Up and running on AppEngine with Maven, Jersey and Guice - Part 2">
+<meta name="twitter:description" content="This is part two of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.
+Part 2 gets us to the point of having a working web application running locall">
   
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <link rel="alternative" href="/atom.xml" title="Development Notes" type="application/atom+xml">
   
-  <link rel="canonical" href="http://akshayrangnekar.github.io/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Akshay's Programming Blog" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<!-- <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
-<link href='//fonts.googleapis.com/css?family=Droid+Sans|Raleway:900' rel='stylesheet' type='text/css'>
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
   
 
 </head>
-
-<body   >
-  <header role="banner"><hgroup>
-    <img class="left" src="http://www.gravatar.com/avatar/712764174a1641db425b971456e63015?r=x&s=700" width="50" height="50" title="me" alt="me">
-  <h1><a href="/">Akshay's Programming Blog</a></h1>
-  
-    <h2>Notes on Coding</h2>
-  
-</hgroup>
-
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Development Notes</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Akshay Rangnekar</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="q" value="site:http://akshayrangnekar.github.io"></form>
+      </div>
+    </div>
+  </div>
 </header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="https://www.google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:akshayrangnekar.github.io" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
+      <div class="outer">
+        <section id="main"><article id="post-up-and-running-on-appengine-with-maven-jersey-and-guice-part-2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/" class="article-date">
+  <time datetime="2014-03-14T10:52:12.000Z" itemprop="datePublished">2014-03-14</time>
+</a>
+    
+  <div class="article-category kinka">
+    <a class="article-category-link" href="/categories/Java/">Java</a>►<a class="article-category-link" href="/categories/Java/Server/">Server</a>
+  </div>
 
-</nav>
-  <div id="main">
-    <div id="content">
-      <div>
-<article class="hentry" role="article">
-  
-  <header>
-    
-      <h1 class="entry-title">Up and Running on AppEngine With Maven, Jersey and Guice - Part 2</h1>
+  </div>
+  <div class="article-inner">
     
     
-      <p class="meta">
+      <header class="article-header">
         
-
-
-
-
-
-
-
-
+  
+    <h1 class="article-title" itemprop="name">
+      Up and running on AppEngine with Maven, Jersey and Guice - Part 2
+    </h1>
   
 
-
-<time datetime="2014-03-14T10:52:12+00:00" pubdate data-updated="true">Mar 14<span>th</span>, 2014</time>
-        
-      </p>
+      </header>
     
-  </header>
-
-
-<div class="entry-content"><p>This is part two of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.</p>
-
-<p>Part 2 gets us to the point of having a working web application running locally and deployed on AppEngine. If you haven&rsquo;t got maven or your working directory set up yet, start on <a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Part 1</a>.</p>
-
-<!-- more -->
-
-
-<h2>Don&rsquo;t follow the Google docs</h2>
-
-<p>This is one not to follow along, but helps explain why this tutorial is needed. To begin, I decided to try following the <a href="">AppEngine docs on user maven</a>.</p>
-
-<p>Let&rsquo;s try their command:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mbp:listerly$ mvn archetype:generate \
-</span><span class='line'>&gt;  -DarchetypeGroupId=com.google.appengine.archetypes \
-</span><span class='line'>&gt;  -DarchetypeArtifactId=appengine-skeleton-archetype \
-</span><span class='line'>&gt;  -DarchetypeVersion=1.9.0 \
-</span><span class='line'>&gt;  -DgroupId=com.listerly.server \
-</span><span class='line'>&gt;  -DartifactId=server \
-</span><span class='line'>&gt;  -Dversion=0.1 \
-</span><span class='line'>&gt;  -Dpackage=com.listerly</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I saw lots of nice maven messages about downloading everything under the sun, and then a hostile failure message.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[INFO] Archetype repository missing. Using the one from [com.google.appengine.archetypes:appengine-skeleton-archetype:1.8.7] found in catalog remote
-</span><span class='line'>Downloading: http://repo.maven.apache.org/maven2/com/google/appengine/archetypes/appengine-skeleton-archetype/1.9.0/appengine-skeleton-archetype-1.9.0.jar
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[INFO] BUILD FAILURE
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[INFO] Total time: 13.591 s
-</span><span class='line'>[INFO] Finished at: 2014-03-14T11:39:14+00:00
-</span><span class='line'>[INFO] Final Memory: 13M/246M
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[ERROR] Failed to execute goal org.apache.maven.plugins:maven-archetype-plugin:2.2:generate (default-cli) on project standalone-pom: The desired archetype does not exist (com.google.appengine.archetypes:appengine-skeleton-archetype:1.9.0) -&gt; [Help 1]</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Thanks very much for that. That doc was updated (when I loaded it) on March 7 2014, so it&rsquo;s 7 days old. And doesn&rsquo;t work. Too new to be out of date, too old to have teething problems.</p>
-
-<p>A <a href="http://search.maven.org/#search%7Cga%7C1%7Cappengine">quick search of Maven Central</a> reveals the likely issue &ndash; the latest version of this archetype that&rsquo;s been published is 1.8.7. Looks like someone&rsquo;s been forgetting to push the archetypes to the Maven Central repo for versions 1.8.8, 1.8.9 and 1.9.0. Two options to proceed: either start using the previous archetype and update. Or start from a cleaner archetype and add in the AppEngine functionality. I&rsquo;m going to proceed with both options: you can pick and choose the one you prefer.</p>
-
-<h2>Starting from the AppEngine skeleton archetype</h2>
-
-<p>Lets first create a branch to work from:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mbp:listerly$ git checkout -b feature_gaeSkeletonArchetype
-</span><span class='line'>Switched to a new branch 'feature_gaeSkeletonArchetype'
-</span><span class='line'>mbp:listerly$ cat README.md 
-</span><span class='line'>listerly
-</span><span class='line'>========
-</span><span class='line'>mbp:listerly$ echo "Branch for appengine skeleton archetype" &gt; branch.txt
-</span><span class='line'>mbp:listerly$ git add .
-</span><span class='line'>mbp:listerly$ git commit -m "Branch message added."
-</span><span class='line'>[feature_gaeSkeletonArchetype 1ca1c52] Branch message added.
-</span><span class='line'> 1 file changed, 1 insertion(+)
-</span><span class='line'> create mode 100644 branch.txt
-</span><span class='line'>mbp:listerly$ git push -u origin feature_gaeSkeletonArchetype
-</span><span class='line'>Counting objects: 4, done.
-</span><span class='line'>Delta compression using up to 8 threads.
-</span><span class='line'>Compressing objects: 100% (2/2), done.
-</span><span class='line'>Writing objects: 100% (3/3), 325 bytes | 0 bytes/s, done.
-</span><span class='line'>Total 3 (delta 0), reused 0 (delta 0)
-</span><span class='line'>To https://github.com/akshayrangnekar/listerly.git
-</span><span class='line'> * [new branch]      feature_gaeSkeletonArchetype -&gt; feature_gaeSkeletonArchetype
-</span><span class='line'>Branch feature_gaeSkeletonArchetype set up to track remote branch feature_gaeSkeletonArchetype from origin.</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now we try re-running the maven archetype:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mbp:listerly$ mvn archetype:generate  -DarchetypeGroupId=com.google.appengine.archetypes  -DarchetypeArtifactId=appengine-skeleton-archetype  -DarchetypeVersion=1.8.7  -DgroupId=com.listerly.server  -DartifactId=server  -Dversion=0.1  -Dpackage=com.listerly
-</span><span class='line'>[INFO] Scanning for projects...
-</span><span class='line'>[INFO] 
-</span><span class='line'>[INFO] Using the builder org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder with a thread count of 1
-</span><span class='line'>[LINES REMOVED]
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[INFO] BUILD SUCCESS
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[INFO] Total time: 6.159 s
-</span><span class='line'>[INFO] Finished at: 2014-03-14T13:14:45+00:00
-</span><span class='line'>[INFO] Final Memory: 14M/246M
-</span><span class='line'>[INFO] ------------------------------------------------------------------------</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That&rsquo;s a lot better. Lets see what we have created for us. Using a handy little command I found <a href="https://coderwall.com/p/owb6eg">here</a>, modified to get rid of gitcrud to make this viewable</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mbp:listerly$ find . -print | grep -v '.git' | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
-</span><span class='line'>.
-</span><span class='line'>|____branch.txt
-</span><span class='line'>|____README.md
-</span><span class='line'>|____server
-</span><span class='line'>| |____pom.xml
-</span><span class='line'>| |____README.md
-</span><span class='line'>| |____server-ear
-</span><span class='line'>| | |____pom.xml
-</span><span class='line'>| | |____src
-</span><span class='line'>| | | |____main
-</span><span class='line'>| | | | |____application
-</span><span class='line'>| | | | | |____META-INF
-</span><span class='line'>| | | | | | |____appengine-application.xml
-</span><span class='line'>| | | | | | |____application.xml
-</span><span class='line'>| | | | | | |____MANIFEST.MF
-</span><span class='line'>| |____server-war
-</span><span class='line'>| | |____pom.xml
-</span><span class='line'>| | |____src
-</span><span class='line'>| | | |____main
-</span><span class='line'>| | | | |____java
-</span><span class='line'>| | | | |____webapp
-</span><span class='line'>| | | | | |____WEB-INF
-</span><span class='line'>| | | | | | |____appengine-web.xml
-</span><span class='line'>| | | | | | |____logging.properties
-</span><span class='line'>| | | | | | |____web.xml
-</span><span class='line'>| | | |____test
-</span><span class='line'>| | | | |____java</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok &ndash; let&rsquo;s try running this:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mbp:listerly$ cd server
-</span><span class='line'>mbp:server$ mvn appengine:devserver
-</span><span class='line'>[INFO] Scanning for projects...
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[INFO] Reactor Build Order:
-</span><span class='line'>[INFO] 
-</span><span class='line'>[INFO] server
-</span><span class='line'>[INFO] server-war
-</span><span class='line'>[INFO] server-ear
-</span><span class='line'>[REMOVED LINES]
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[INFO] Reactor Summary:
-</span><span class='line'>[INFO] 
-</span><span class='line'>[INFO] server ............................................ FAILURE [ 16.241 s]
-</span><span class='line'>[INFO] server-war ........................................ SKIPPED
-</span><span class='line'>[INFO] server-ear ........................................ SKIPPED
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[INFO] BUILD FAILURE
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[INFO] Total time: 17.469 s
-</span><span class='line'>[INFO] Finished at: 2014-03-14T13:26:54+00:00
-</span><span class='line'>[INFO] Final Memory: 9M/246M
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[ERROR] Failed to execute goal com.google.appengine:appengine-maven-plugin:1.8.7:devserver (default-cli) on project server: The application directory does not exist : /Users/akshay/Dev/Listerly/listerly/server/target/server-0.1 -&gt; [Help 1]</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Not nice. Ok, let&rsquo;s try again with some help from the appengine docs (though not following them to the letter since they are wrong about the directory to run from):</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mbp:server akshay$ mvn clean install
-</span><span class='line'>[REMOVED LOTS OF LINES]
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[INFO] BUILD SUCCESS
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>[INFO] Total time: 17.990 s
-</span><span class='line'>[INFO] Finished at: 2014-03-14T13:36:48+00:00
-</span><span class='line'>[INFO] Final Memory: 11M/246M
-</span><span class='line'>[INFO] ------------------------------------------------------------------------
-</span><span class='line'>mbp:server akshay$ mvn -pl server-ear appengine:devserver
-</span><span class='line'>[INFO] Scanning for projects...
-</span><span class='line'>[REMOVED LOTS OF LINES]
-</span><span class='line'>[INFO] INFO: The admin console is running at http://localhost:8080/_ah/admin
-</span><span class='line'>[INFO] Mar 14, 2014 1:40:02 PM com.google.appengine.tools.development.DevAppServerImpl doStart
-</span><span class='line'>[INFO] INFO: Dev App Server is now running</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That looks good.</p>
-
-<p>If we load up the admin console at <code>http://localhost:8080/_ah/admin</code> it seems right:
-<img src="/images/postimages/2/dev-appengine-console1.png"></p>
-
-<p>There is of course nothing there. So let&rsquo;s create a very simple Servlet. Here&rsquo;s my incredibly basic HelloWorldServlet:</p>
-
-<figure class='code'><figcaption><span> (HelloWorldServlet.java)</span> <a href='/downloads/code/1/HelloWorldServlet.java'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServlet</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.annotation.WebServlet</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@WebServlet</span><span class="o">(</span><span class="s">&quot;/Hello&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
-</span><span class='line'>    <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">resp</span><span class="o">)</span>
-</span><span class='line'>      <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">resp</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">&quot;text/plain&quot;</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">resp</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello AppEngine!&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>But if we try running it:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">mbp:server akshay$</span> mvn install
-</span><span class='line'><span class="go">[INFO] Scanning for projects...</span>
-</span><span class='line'><span class="go">...</span>
-</span><span class='line'><span class="go">[INFO] -------------------------------------------------------------</span>
-</span><span class='line'><span class="go">[ERROR] COMPILATION ERROR : </span>
-</span><span class='line'><span class="go">[INFO] -------------------------------------------------------------</span>
-</span><span class='line'><span class="go">[ERROR] /Users/akshay/Dev/Listerly/listerly/server/server-war/src/main/java/com/listerly/HelloWorldServlet.java:[6,31] error: package javax.servlet.annotation does not exist</span>
-</span><span class='line'><span class="go">[ERROR] /Users/akshay/Dev/Listerly/listerly/server/server-war/src/main/java/com/listerly/HelloWorldServlet.java:[11,1] error: cannot find symbol</span>
-</span><span class='line'><span class="go">[ERROR]   symbol: class WebServlet</span>
-</span><span class='line'><span class="go">/Users/akshay/Dev/Listerly/listerly/server/server-war/src/main/java/com/listerly/HelloWorldServlet.java:[6,31] error: package javax.servlet.annotation does not exist</span>
-</span><span class='line'><span class="go">[ERROR] /Users/akshay/Dev/Listerly/listerly/server/server-war/src/main/java/com/listerly/HelloWorldServlet.java:[11,1] error: cannot find symbol</span>
-</span><span class='line'><span class="go">[INFO] 4 errors </span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ass. So clearly the archetype doesn&rsquo;t use the latest version of the Servlet API. Interestingly, I cannot find anything easily available in Google&rsquo;s docs about what version of the Servlet API they support. Let&rsquo;s try defining the servlet in the web.xml</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;servlet&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;servlet-name&gt;</span>HelloWorldServlet<span class="nt">&lt;/servlet-name&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;servlet-class&gt;</span>com.listerly.HelloWorldServlet<span class="nt">&lt;/servlet-class&gt;</span>
-</span><span class='line'><span class="nt">&lt;/servlet&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;servlet-mapping&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;servlet-name&gt;</span>HelloWorldServlet<span class="nt">&lt;/servlet-name&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;url-pattern&gt;</span>/hi<span class="nt">&lt;/url-pattern&gt;</span>
-</span><span class='line'><span class="nt">&lt;/servlet-mapping&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and rerunning:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'>mbp:server akshay$ mvn install
-</span><span class='line'>mbp:server akshay$ mvn -pl server-ear appengine:devserver
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and this time we get something better:
-<img src="/images/postimages/2/dev-appengine-try2.png"></p>
-
-<p>Awesome. We now have a servlet running on our local dev server. Looks like we can&rsquo;t use the WebServlet annotation with the devserver though. Lets try pushing this app to appengine. First, there are a tweak to the configuration file. In <code>appengine-web.xml</code> set the application to the id of the project you created on the AppEngine console:</p>
-
-<figure class='code'><figcaption><span>server-war/src/main/webapp/WEB-INF/appengine-web.xml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;appengine-web-app</span> <span class="na">xmlns=</span><span class="s">&quot;http://appengine.google.com/ns/1.0&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;application&gt;</span>listerly-dev<span class="nt">&lt;/application&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;version&gt;</span>${appengine.app.version}<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;threadsafe&gt;</span>true<span class="nt">&lt;/threadsafe&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nt">&lt;system-properties&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;java.util.logging.config.file&quot;</span> <span class="na">value=</span><span class="s">&quot;WEB-INF/logging.properties&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/system-properties&gt;</span>
-</span><span class='line'><span class="nt">&lt;/appengine-web-app&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and in the <code>appengine-application.xml</code> do the same thing:</p>
-
-<figure class='code'><figcaption><span>server-ear/src/main/application/META-INF/appengine-application.xml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;appengine-application</span> <span class="na">xmlns=</span><span class="s">&quot;http://appengine.google.com/ns/1.0&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;application&gt;</span>listerly-dev<span class="nt">&lt;/application&gt;</span>
-</span><span class='line'><span class="nt">&lt;/appengine-application&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then run the <code>update</code> tasks <code>mvn -pl server-ear appengine:update</code>. If all is well, you should first see a browser window pop up asking you for authentication:
-<img src="/images/postimages/2/dev-appengine-auth1.png"></p>
-
-<p><img src="/images/postimages/2/dev-appengine-auth2.png"></p>
-
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>This is part two of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.</p>
+<p>Part 2 gets us to the point of having a working web application running locally and deployed on AppEngine. If you haven’t got maven or your working directory set up yet, start on <a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Part 1</a>.<br><a id="more"></a></p>
+<h2 id="Don’t_follow_the_Google_docs">Don’t follow the Google docs</h2><p>This is one not to follow along, but helps explain why this tutorial is needed. To begin, I decided to try following the <a href="">AppEngine docs on user maven</a>.</p>
+<p>Let’s try their command:<br><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mbp:listerly$ mvn archetype:generate \</span><br><span class="line"><span class="blockquote">&gt;  -DarchetypeGroupId=com.google.appengine.archetypes \</span></span><br><span class="line"><span class="blockquote">&gt;  -DarchetypeArtifactId=appengine-skeleton-archetype \</span></span><br><span class="line"><span class="blockquote">&gt;  -DarchetypeVersion=1.9.0 \</span></span><br><span class="line"><span class="blockquote">&gt;  -DgroupId=com.listerly.server \</span></span><br><span class="line"><span class="blockquote">&gt;  -DartifactId=server \</span></span><br><span class="line"><span class="blockquote">&gt;  -Dversion=0.1 \</span></span><br><span class="line"><span class="blockquote">&gt;  -Dpackage=com.listerly</span></span><br></pre></td></tr></table></figure></p>
+<p>I saw lots of nice maven messages about downloading everything under the sun, and then a hostile failure message.<br><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr_selector">[INFO]</span> <span class="tag">Archetype</span> <span class="tag">repository</span> <span class="tag">missing</span>. <span class="tag">Using</span> <span class="tag">the</span> <span class="tag">one</span> <span class="tag">from</span> <span class="attr_selector">[com.google.appengine.archetypes:appengine-skeleton-archetype:1.8.7]</span> <span class="tag">found</span> <span class="tag">in</span> <span class="tag">catalog</span> <span class="tag">remote</span></span><br><span class="line"><span class="tag">Downloading</span>: <span class="tag">http</span>:<span class="comment">//repo.maven.apache.org/maven2/com/google/appengine/archetypes/appengine-skeleton-archetype/1.9.0/appengine-skeleton-archetype-1.9.0.jar</span></span><br><span class="line"><span class="attr_selector">[INFO]</span> <span class="tag">------------------------------------------------------------------------</span></span><br><span class="line"><span class="attr_selector">[INFO]</span> <span class="tag">BUILD</span> <span class="tag">FAILURE</span></span><br><span class="line"><span class="attr_selector">[INFO]</span> <span class="tag">------------------------------------------------------------------------</span></span><br><span class="line"><span class="attr_selector">[INFO]</span> <span class="tag">Total</span> <span class="tag">time</span>: <span class="tag">13</span><span class="class">.591</span> <span class="tag">s</span></span><br><span class="line"><span class="attr_selector">[INFO]</span> <span class="tag">Finished</span> <span class="tag">at</span>: <span class="tag">2014-03-14T11</span><span class="pseudo">:39</span><span class="pseudo">:14</span>+<span class="tag">00</span><span class="pseudo">:00</span></span><br><span class="line"><span class="attr_selector">[INFO]</span> <span class="tag">Final</span> <span class="tag">Memory</span>: <span class="tag">13M</span>/<span class="tag">246M</span></span><br><span class="line"><span class="attr_selector">[INFO]</span> <span class="tag">------------------------------------------------------------------------</span></span><br><span class="line"><span class="attr_selector">[ERROR]</span> <span class="tag">Failed</span> <span class="tag">to</span> <span class="tag">execute</span> <span class="tag">goal</span> <span class="tag">org</span><span class="class">.apache</span><span class="class">.maven</span><span class="class">.plugins</span><span class="pseudo">:maven-archetype-plugin</span><span class="pseudo">:2</span><span class="class">.2</span><span class="pseudo">:generate</span> (default-cli) <span class="tag">on</span> <span class="tag">project</span> <span class="tag">standalone-pom</span>: <span class="tag">The</span> <span class="tag">desired</span> <span class="tag">archetype</span> <span class="tag">does</span> <span class="tag">not</span> <span class="tag">exist</span> (com.google.appengine.<span class="attribute">archetypes</span>:<span class="attribute">appengine-skeleton-archetype</span>:<span class="number">1.9</span>.<span class="number">0</span>) <span class="tag">-</span>&gt; <span class="attr_selector">[Help 1]</span></span><br></pre></td></tr></table></figure></p>
+<p>Thanks very much for that. That doc was updated (when I loaded it) on March 7 2014, so it’s 7 days old. And doesn’t work. Too new to be out of date, too old to have teething problems. </p>
+<p>A <a href="http://search.maven.org/#search%7Cga%7C1%7Cappengine" target="_blank" rel="external">quick search of Maven Central</a> reveals the likely issue - the latest version of this archetype that’s been published is 1.8.7. Looks like someone’s been forgetting to push the archetypes to the Maven Central repo for versions 1.8.8, 1.8.9 and 1.9.0. Two options to proceed: either start using the previous archetype and update. Or start from a cleaner archetype and add in the AppEngine functionality. I’m going to proceed with both options: you can pick and choose the one you prefer.</p>
+<h2 id="Starting_from_the_AppEngine_skeleton_archetype">Starting from the AppEngine skeleton archetype</h2><p>Lets first create a branch to work from:<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mbp:</span>listerly$ git checkout -b feature_gaeSkeletonArchetype</span><br><span class="line">Switched to a <span class="keyword">new</span> branch <span class="string">'feature_gaeSkeletonArchetype'</span></span><br><span class="line"><span class="string">mbp:</span>listerly$ cat README.md </span><br><span class="line">listerly</span><br><span class="line">========</span><br><span class="line"><span class="string">mbp:</span>listerly$ echo <span class="string">"Branch for appengine skeleton archetype"</span> &gt; branch.txt</span><br><span class="line"><span class="string">mbp:</span>listerly$ git add .</span><br><span class="line"><span class="string">mbp:</span>listerly$ git commit -m <span class="string">"Branch message added."</span></span><br><span class="line">[feature_gaeSkeletonArchetype <span class="number">1</span>ca1c52] Branch message added.</span><br><span class="line"> <span class="number">1</span> file changed, <span class="number">1</span> insertion(+)</span><br><span class="line"> create mode <span class="number">100644</span> branch.txt</span><br><span class="line"><span class="string">mbp:</span>listerly$ git push -u origin feature_gaeSkeletonArchetype</span><br><span class="line">Counting <span class="string">objects:</span> <span class="number">4</span>, done.</span><br><span class="line">Delta compression using up to <span class="number">8</span> threads.</span><br><span class="line">Compressing <span class="string">objects:</span> <span class="number">100</span>% (<span class="number">2</span>/<span class="number">2</span>), done.</span><br><span class="line">Writing <span class="string">objects:</span> <span class="number">100</span>% (<span class="number">3</span><span class="regexp">/3), 325 bytes | 0 bytes/</span>s, done.</span><br><span class="line">Total <span class="number">3</span> (delta <span class="number">0</span>), reused <span class="number">0</span> (delta <span class="number">0</span>)</span><br><span class="line">To <span class="string">https:</span><span class="comment">//github.com/akshayrangnekar/listerly.git</span></span><br><span class="line"> * [<span class="keyword">new</span> branch]      feature_gaeSkeletonArchetype -&gt; feature_gaeSkeletonArchetype</span><br><span class="line">Branch feature_gaeSkeletonArchetype set up to track remote branch feature_gaeSkeletonArchetype from origin.</span><br></pre></td></tr></table></figure></p>
+<p>Now we try re-running the maven archetype:<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mbp:listerly$ mvn archetype:generate  -DarchetypeGroupId=com<span class="class">.google</span><span class="class">.appengine</span><span class="class">.archetypes</span>  -DarchetypeArtifactId=appengine-skeleton-archetype  -DarchetypeVersion=<span class="number">1.8</span>.<span class="number">7</span>  -DgroupId=com<span class="class">.listerly</span><span class="class">.server</span>  -DartifactId=server  -Dversion=<span class="number">0.1</span>  -Dpackage=com<span class="class">.listerly</span></span><br><span class="line">[INFO] Scanning <span class="keyword">for</span> projects...</span><br><span class="line">[INFO] </span><br><span class="line">[INFO] Using the builder org<span class="class">.apache</span><span class="class">.maven</span><span class="class">.lifecycle</span><span class="class">.internal</span><span class="class">.builder</span><span class="class">.singlethreaded</span><span class="class">.SingleThreadedBuilder</span> with <span class="tag">a</span> thread count of <span class="number">1</span></span><br><span class="line">[LINES REMOVED]</span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br><span class="line">[INFO] BUILD SUCCESS</span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br><span class="line">[INFO] Total <span class="tag">time</span>: <span class="number">6.159</span> s</span><br><span class="line">[INFO] Finished at: <span class="number">2014</span>-<span class="number">03</span>-<span class="number">14</span>T13:<span class="number">14</span>:<span class="number">45</span>+<span class="number">00</span>:<span class="number">00</span></span><br><span class="line">[INFO] Final Memory: <span class="number">14</span>M/<span class="number">246</span>M</span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br></pre></td></tr></table></figure></p>
+<p>That’s a lot better. Lets see what we have created for us. Using a handy little command I found <a href="https://coderwall.com/p/owb6eg" target="_blank" rel="external">here</a>, modified to get rid of gitcrud to make this viewable<br><figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">mbp:listerly$ find . -print <span class="string">| grep -v '.git' | sed -e 's;[^/]*/;|____;g;s;____|; |;g'</span></span><br><span class="line">.</span><br><span class="line"><span class="string">|____branch.txt</span></span><br><span class="line"><span class="string">|____README.md</span></span><br><span class="line"><span class="string">|____server</span></span><br><span class="line"><span class="string">| |____pom.xml</span></span><br><span class="line"><span class="string">| |____README.md</span></span><br><span class="line"><span class="string">| |____server-ear</span></span><br><span class="line"><span class="string">| | |____pom.xml</span></span><br><span class="line"><span class="string">| | |____src</span></span><br><span class="line"><span class="string">| | | |____main</span></span><br><span class="line"><span class="string">| | | | |____application</span></span><br><span class="line"><span class="string">| | | | | |____META-INF</span></span><br><span class="line"><span class="string">| | | | | | |____appengine-application.xml</span></span><br><span class="line"><span class="string">| | | | | | |____application.xml</span></span><br><span class="line"><span class="string">| | | | | | |____MANIFEST.MF</span></span><br><span class="line"><span class="string">| |____server-war</span></span><br><span class="line"><span class="string">| | |____pom.xml</span></span><br><span class="line"><span class="string">| | |____src</span></span><br><span class="line"><span class="string">| | | |____main</span></span><br><span class="line"><span class="string">| | | | |____java</span></span><br><span class="line"><span class="string">| | | | |____webapp</span></span><br><span class="line"><span class="string">| | | | | |____WEB-INF</span></span><br><span class="line"><span class="string">| | | | | | |____appengine-web.xml</span></span><br><span class="line"><span class="string">| | | | | | |____logging.properties</span></span><br><span class="line"><span class="string">| | | | | | |____web.xml</span></span><br><span class="line"><span class="string">| | | |____test</span></span><br><span class="line"><span class="string">| | | | |____java</span></span><br></pre></td></tr></table></figure></p>
+<p>Ok - let’s try running this:<br><figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="atom">mbp</span>:<span class="atom">listerly</span>$ <span class="atom">cd</span> <span class="atom">server</span></span><br><span class="line"><span class="atom">mbp</span>:<span class="atom">server</span>$ <span class="atom">mvn</span> <span class="atom">appengine</span>:<span class="atom">devserver</span></span><br><span class="line">[<span class="name">INFO</span>] <span class="name">Scanning</span> <span class="atom">for</span> <span class="atom">projects</span>...</span><br><span class="line">[<span class="name">INFO</span>] ------------------------------------------------------------------------</span><br><span class="line">[<span class="name">INFO</span>] <span class="name">Reactor</span> <span class="name">Build</span> <span class="name">Order</span>:</span><br><span class="line">[<span class="name">INFO</span>] </span><br><span class="line">[<span class="name">INFO</span>] <span class="atom">server</span></span><br><span class="line">[<span class="name">INFO</span>] <span class="atom">server</span>-<span class="atom">war</span></span><br><span class="line">[<span class="name">INFO</span>] <span class="atom">server</span>-<span class="atom">ear</span></span><br><span class="line">[<span class="name">REMOVED</span> <span class="name">LINES</span>]</span><br><span class="line">[<span class="name">INFO</span>] ------------------------------------------------------------------------</span><br><span class="line">[<span class="name">INFO</span>] <span class="name">Reactor</span> <span class="name">Summary</span>:</span><br><span class="line">[<span class="name">INFO</span>] </span><br><span class="line">[<span class="name">INFO</span>] <span class="atom">server</span> ............................................ <span class="name">FAILURE</span> [ <span class="number">16.241</span> <span class="atom">s</span>]</span><br><span class="line">[<span class="name">INFO</span>] <span class="atom">server</span>-<span class="atom">war</span> ........................................ <span class="name">SKIPPED</span></span><br><span class="line">[<span class="name">INFO</span>] <span class="atom">server</span>-<span class="atom">ear</span> ........................................ <span class="name">SKIPPED</span></span><br><span class="line">[<span class="name">INFO</span>] ------------------------------------------------------------------------</span><br><span class="line">[<span class="name">INFO</span>] <span class="name">BUILD</span> <span class="name">FAILURE</span></span><br><span class="line">[<span class="name">INFO</span>] ------------------------------------------------------------------------</span><br><span class="line">[<span class="name">INFO</span>] <span class="name">Total</span> <span class="atom">time</span>: <span class="number">17.469</span> <span class="atom">s</span></span><br><span class="line">[<span class="name">INFO</span>] <span class="name">Finished</span> <span class="atom">at</span>: <span class="number">2014</span>-<span class="number">03</span>-<span class="number">14</span><span class="name">T13</span>:<span class="number">26</span>:<span class="number">54</span>+<span class="number">00</span>:<span class="number">00</span></span><br><span class="line">[<span class="name">INFO</span>] <span class="name">Final</span> <span class="name">Memory</span>: <span class="number">9</span><span class="name">M</span>/<span class="number">246</span><span class="name">M</span></span><br><span class="line">[<span class="name">INFO</span>] ------------------------------------------------------------------------</span><br><span class="line">[<span class="name">ERROR</span>] <span class="name">Failed</span> <span class="atom">to</span> <span class="atom">execute</span> <span class="atom">goal</span> <span class="atom">com</span>.<span class="atom">google</span>.<span class="atom">appengine</span>:<span class="atom">appengine</span>-<span class="atom">maven</span>-<span class="atom">plugin</span>:<span class="number">1.8</span>.7:<span class="atom">devserver</span> (<span class="atom">default</span>-<span class="atom">cli</span>) <span class="atom">on</span> <span class="atom">project</span> <span class="atom">server</span>: <span class="name">The</span> <span class="atom">application</span> <span class="atom">directory</span> <span class="atom">does</span> <span class="atom">not</span> <span class="atom">exist</span> : /<span class="name">Users</span>/<span class="atom">akshay</span>/<span class="name">Dev</span>/<span class="name">Listerly</span>/<span class="atom">listerly</span>/<span class="atom">server</span>/<span class="atom">target</span>/<span class="atom">server</span>-<span class="number">0.1</span> -&gt; [<span class="name">Help</span> <span class="number">1</span>]</span><br></pre></td></tr></table></figure></p>
+<p>Not nice. Ok, let’s try again with some help from the appengine docs (though not following them to the letter since they are wrong about the directory to run from):<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mbp:server akshay$ mvn clean <span class="operator"><span class="keyword">install</span></span><br><span class="line">[REMOVED LOTS <span class="keyword">OF</span> <span class="keyword">LINES</span>]</span><br><span class="line">[INFO] <span class="comment">------------------------------------------------------------------------</span></span><br><span class="line">[INFO] BUILD SUCCESS</span><br><span class="line">[INFO] <span class="comment">------------------------------------------------------------------------</span></span><br><span class="line">[INFO] Total <span class="keyword">time</span>: <span class="number">17.990</span> s</span><br><span class="line">[INFO] Finished <span class="keyword">at</span>: <span class="number">2014</span>-<span class="number">03</span>-<span class="number">14</span>T13:<span class="number">36</span>:<span class="number">48</span>+<span class="number">00</span>:<span class="number">00</span></span><br><span class="line">[INFO] Final Memory: <span class="number">11</span>M/<span class="number">246</span>M</span><br><span class="line">[INFO] <span class="comment">------------------------------------------------------------------------</span></span><br><span class="line">mbp:<span class="keyword">server</span> akshay$ mvn -pl <span class="keyword">server</span>-ear appengine:devserver</span><br><span class="line">[INFO] Scanning <span class="keyword">for</span> projects...</span><br><span class="line">[REMOVED LOTS <span class="keyword">OF</span> <span class="keyword">LINES</span>]</span><br><span class="line">[INFO] INFO: The admin console <span class="keyword">is</span> running <span class="keyword">at</span> http://localhost:<span class="number">8080</span>/_ah/admin</span><br><span class="line">[INFO] Mar <span class="number">14</span>, <span class="number">2014</span> <span class="number">1</span>:<span class="number">40</span>:<span class="number">02</span> PM com.google.appengine.tools.development.DevAppServerImpl doStart</span><br><span class="line">[INFO] INFO: Dev App <span class="keyword">Server</span> <span class="keyword">is</span> <span class="keyword">now</span> running</span></span><br></pre></td></tr></table></figure></p>
+<p>That looks good. </p>
+<p>If we load up the admin console at <code>http://localhost:8080/_ah/admin</code> it seems right:<br><img src="/images/postimages/2/dev-appengine-console1.png">    </p>
+<p>There is of course nothing there. So let’s create a very simple Servlet. Here’s my incredibly basic HelloWorldServlet:<br><figure class="highlight java"><figcaption><span>HelloWorldServlet.java</span><a href="/downloads/code/1/HelloWorldServlet.java">view raw</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.listerly;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.annotation.WebServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"></span><br><span class="line"><span class="annotation">@WebServlet</span>(<span class="string">"/Hello"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorldServlet</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span> </span>{</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> </span><br><span class="line">		<span class="keyword">throws</span> ServletException, IOException </span>{</span><br><span class="line">		resp.setContentType(<span class="string">"text/plain"</span>);</span><br><span class="line">		resp.getWriter().println(<span class="string">"Hello AppEngine!"</span>);</span><br><span class="line">	}</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<p>But if we try running it:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mbp:server akshay$ mvn install&#10;[INFO] Scanning for projects...&#10;...&#10;[INFO] -------------------------------------------------------------&#10;[ERROR] COMPILATION ERROR : &#10;[INFO] -------------------------------------------------------------&#10;[ERROR] /Users/akshay/Dev/Listerly/listerly/server/server-war/src/main/java/com/listerly/HelloWorldServlet.java:[6,31] error: package javax.servlet.annotation does not exist&#10;[ERROR] /Users/akshay/Dev/Listerly/listerly/server/server-war/src/main/java/com/listerly/HelloWorldServlet.java:[11,1] error: cannot find symbol&#10;[ERROR]   symbol: class WebServlet&#10;/Users/akshay/Dev/Listerly/listerly/server/server-war/src/main/java/com/listerly/HelloWorldServlet.java:[6,31] error: package javax.servlet.annotation does not exist&#10;[ERROR] /Users/akshay/Dev/Listerly/listerly/server/server-war/src/main/java/com/listerly/HelloWorldServlet.java:[11,1] error: cannot find symbol&#10;[INFO] 4 errors</span><br></pre></td></tr></table></figure></p>
+<p>Ass. So clearly the archetype doesn’t use the latest version of the Servlet API. Interestingly, I cannot find anything easily available in Google’s docs about what version of the Servlet API they support. Let’s try defining the servlet in the web.xml<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">servlet</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">servlet-name</span>&gt;</span>HelloWorldServlet<span class="tag">&lt;/<span class="title">servlet-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">servlet-class</span>&gt;</span>com.listerly.HelloWorldServlet<span class="tag">&lt;/<span class="title">servlet-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">servlet</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="title">servlet-mapping</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">servlet-name</span>&gt;</span>HelloWorldServlet<span class="tag">&lt;/<span class="title">servlet-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">url-pattern</span>&gt;</span>/hi<span class="tag">&lt;/<span class="title">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">servlet-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>and rerunning:<br><figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mbp:<span class="keyword">server</span> akshay$ mvn install</span><br><span class="line">mbp:<span class="keyword">server</span> akshay$ mvn -pl <span class="keyword">server</span>-ear appengine:devserver</span><br></pre></td></tr></table></figure></p>
+<p>and this time we get something better:<br><img src="/images/postimages/2/dev-appengine-try2.png">    </p>
+<p>Awesome. We now have a servlet running on our local dev server. Looks like we can’t use the WebServlet annotation with the devserver though. Lets try pushing this app to appengine. First, there are a tweak to the configuration file. In <code>appengine-web.xml</code> set the application to the id of the project you created on the AppEngine console:</p>
+<figure class="highlight xml"><figcaption><span>server-war/src/main/webapp/WEB-INF/appengine-web.xml</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">appengine-web-app</span> <span class="attribute">xmlns</span>=<span class="value">"http://appengine.google.com/ns/1.0"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">application</span>&gt;</span>listerly-dev<span class="tag">&lt;/<span class="title">application</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">version</span>&gt;</span>$&#123;appengine.app.version&#125;<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">threadsafe</span>&gt;</span>true<span class="tag">&lt;/<span class="title">threadsafe</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="title">system-properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"java.util.logging.config.file"</span> <span class="attribute">value</span>=<span class="value">"WEB-INF/logging.properties"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">system-properties</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">appengine-web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>and in the <code>appengine-application.xml</code> do the same thing:<br><figure class="highlight xml"><figcaption><span>server-ear/src/main/application/META-INF/appengine-application.xml</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">appengine-application</span> <span class="attribute">xmlns</span>=<span class="value">"http://appengine.google.com/ns/1.0"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">application</span>&gt;</span>listerly-dev<span class="tag">&lt;/<span class="title">application</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">appengine-application</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>And then run the <code>update</code> tasks <code>mvn -pl server-ear appengine:update</code>. If all is well, you should first see a browser window pop up asking you for authentication:<br><img src="/images/postimages/2/dev-appengine-auth1.png">    </p>
+<img src="/images/postimages/2/dev-appengine-auth2.png">    
 <p>Enter that code when you get the prompt <code>Please enter code:</code>. If all is well you should see a <code>BUILD SUCCESS</code> message at the end of the compilation and deployment step (note: this takes a couple of minutes);</p>
-
-<p>Load the page from your appspot URL <code>http://[your-application-id].appspot.com/hi</code> and you should see your Hello AppEngine page, running on Google AppEngine. That&rsquo;s success for this part.</p>
-
-<p><img src="/images/postimages/2/helloworld-appengine1.png"></p>
-
-<p>Lets commit everything and then switch back to the master to try the handrolled way.</p>
-
-<figure class='code'><figcaption><span>server-ear/src/main/application/META-INF/appengine-application.xml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'>mbp:~/Dev/Listerly/listerly$ git add .
-</span><span class='line'>[NON-ERROR OUTPUT HIDDEN]
-</span><span class='line'>mbp:~/Dev/Listerly/listerly$ git commit -m &quot;Working HelloWorld with Google archetype&quot;
-</span><span class='line'>[NON-ERROR OUTPUT HIDDEN]
-</span><span class='line'>mbp:~/Dev/Listerly/listerly$ git push
-</span><span class='line'>[NON-ERROR OUTPUT HIDDEN]
-</span><span class='line'>mbp:~/Dev/Listerly/listerly$ git checkout master
-</span><span class='line'>[NON-ERROR OUTPUT HIDDEN]
-</span><span class='line'>mbp:~/Dev/Listerly/listerly$ git pull
-</span><span class='line'>Already up-to-date.
-</span><span class='line'>mbp:~/Dev/Listerly/listerly$ ls
-</span><span class='line'>README.md server
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Starting from scratch</h2>
-
-<p>I have to admit, this is my preferred way of starting because I like to have complete control over the project layout, the directory structure etc.</p>
-
-<p>Let&rsquo;s start with what my ideal directory structure is:</p>
-
+<p>Load the page from your appspot URL <code>http://[your-application-id].appspot.com/hi</code> and you should see your Hello AppEngine page, running on Google AppEngine. That’s success for this part. </p>
+<img src="/images/postimages/2/helloworld-appengine1.png">    
+<p>Lets commit everything and then switch back to the master to try the handrolled way.<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">mbp:</span>~<span class="regexp">/Dev/</span><span class="constant">Listerly/</span>listerly<span class="variable">$ </span>git add .</span><br><span class="line">[<span class="constant">NON-ERROR OUTPUT HIDDEN]</span></span><br><span class="line"><span class="symbol">mbp:</span>~<span class="regexp">/Dev/</span><span class="constant">Listerly/</span>listerly<span class="variable">$ </span>git commit -m <span class="string">"Working HelloWorld with Google archetype"</span></span><br><span class="line">[<span class="constant">NON-ERROR OUTPUT HIDDEN]</span></span><br><span class="line"><span class="symbol">mbp:</span>~<span class="regexp">/Dev/</span><span class="constant">Listerly/</span>listerly<span class="variable">$ </span>git push</span><br><span class="line">[<span class="constant">NON-ERROR OUTPUT HIDDEN]</span></span><br><span class="line"><span class="symbol">mbp:</span>~<span class="regexp">/Dev/</span><span class="constant">Listerly/</span>listerly<span class="variable">$ </span>git checkout master</span><br><span class="line">[<span class="constant">NON-ERROR OUTPUT HIDDEN]</span></span><br><span class="line"><span class="symbol">mbp:</span>~<span class="regexp">/Dev/</span><span class="constant">Listerly/</span>listerly<span class="variable">$ </span>git pull</span><br><span class="line"><span class="constant">Already </span>up-to-date.</span><br><span class="line"><span class="symbol">mbp:</span>~<span class="regexp">/Dev/</span><span class="constant">Listerly/</span>listerly<span class="variable">$ </span>ls</span><br><span class="line"><span class="constant">README.</span>md	server</span><br></pre></td></tr></table></figure></p>
+<h2 id="Starting_from_scratch">Starting from scratch</h2><p>I have to admit, this is my preferred way of starting because I like to have complete control over the project layout, the directory structure etc.</p>
+<p>Let’s start with what my ideal directory structure is:</p>
 <ul>
-<li>[root directory] &ndash; Primarily contains build files
-
-<ul>
-<li><em>src</em>
-
-<ul>
-<li><em>main</em>
-
-<ul>
-<li><em>java</em> &ndash; The main directory for source code</li>
-<li><em>resources</em> &ndash; Other items that have to go into the jar (logging config, application config)</li>
-<li><em>webapp</em> &ndash; Resources (css, images, js)</li>
-<li><em>templates</em> &ndash; Freemarker templates for pages</li>
+<li>[root directory] - Primarily contains build files<ul>
+<li><em>src</em><ul>
+<li><em>main</em><ul>
+<li><em>java</em> - The main directory for source code</li>
+<li><em>resources</em> - Other items that have to go into the jar (logging config, application config)</li>
+<li><em>webapp</em> - Resources (css, images, js)</li>
+<li><em>templates</em> - Freemarker templates for pages</li>
 </ul>
 </li>
-<li><em>test</em> &ndash; Testing resources (will be defined later)</li>
+<li><em>test</em> - Testing resources (will be defined later)</li>
 </ul>
 </li>
-<li><em>build</em> &ndash; temporary directory, ignored by git, for artifacts</li>
+<li><em>build</em> - temporary directory, ignored by git, for artifacts</li>
 </ul>
 </li>
 </ul>
-
-
-<p>Lets start by creating that directory structure (leave out the build directory &ndash; should be created automatically). Then we&rsquo;ll make a basic Maven build file (named <code>pom.xml</code> in our root directory)</p>
-
-<figure class='code'><figcaption><span>server-ear/src/main/application/META-INF/appengine-application.xml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-</span><span class='line'>  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>com.listerly<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>listerly-server<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;version&gt;</span>0.1<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;packaging&gt;</span>war<span class="nt">&lt;/packaging&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;name&gt;</span>Listerly Main Server<span class="nt">&lt;/name&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;url&gt;</span>http://www.listerly.com<span class="nt">&lt;/url&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;dependencies&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>servlet-api<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;version&gt;</span>2.5<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/dependencies&gt;</span>
-</span><span class='line'><span class="nt">&lt;/project&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
+<p>Lets start by creating that directory structure (leave out the build directory - should be created automatically). Then we’ll make a basic Maven build file (named <code>pom.xml</code> in our root directory)</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">project</span> <span class="attribute">xmlns</span>=<span class="value">"http://maven.apache.org/POM/4.0.0"</span> <span class="attribute">xmlns:xsi</span>=<span class="value">"http://www.w3.org/2001/XMLSchema-instance"</span></span><br><span class="line">  <span class="attribute">xsi:schemaLocation</span>=<span class="value">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="title">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.listerly<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>listerly-server<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">version</span>&gt;</span>0.1<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">packaging</span>&gt;</span>war<span class="tag">&lt;/<span class="title">packaging</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="title">name</span>&gt;</span>Listerly Main Server<span class="tag">&lt;/<span class="title">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">url</span>&gt;</span>http://www.listerly.com<span class="tag">&lt;/<span class="title">url</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="title">dependencies</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">	  	<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">	  	<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>servlet-api<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">	  	<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.5<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="title">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>Then we add our basic servlet and a web.xml:</p>
-
-<p>In <code>src/main/java/com/listerly/</code></p>
-
-<figure class='code'><figcaption><span> (HelloWorldServlet.java)</span> <a href='/downloads/code/1/b/HelloWorldServlet.java'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServlet</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;serial&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">resp</span><span class="o">)</span>
-</span><span class='line'>          <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">resp</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">&quot;text/plain&quot;</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">resp</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello, my AppEngine&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In <code>src/main/webapp/WEB-INF</code></p>
-
-<figure class='code'><figcaption><span> (web.xml)</span> <a href='/downloads/code/1/b/web.xml'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-</span><span class='line'><span class="nt">&lt;web-app</span> <span class="na">version=</span><span class="s">&quot;2.5&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://java.sun.com/xml/ns/javaee&quot;</span>
-</span><span class='line'><span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-</span><span class='line'><span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;welcome-file-list&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;welcome-file&gt;</span>index.html<span class="nt">&lt;/welcome-file&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/welcome-file-list&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;servlet&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;servlet-name&gt;</span>HelloWorldServlet<span class="nt">&lt;/servlet-name&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;servlet-class&gt;</span>com.listerly.HelloWorldServlet<span class="nt">&lt;/servlet-class&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/servlet&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;servlet-mapping&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;servlet-name&gt;</span>HelloWorldServlet<span class="nt">&lt;/servlet-name&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;url-pattern&gt;</span>/hi<span class="nt">&lt;/url-pattern&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/servlet-mapping&gt;</span>
-</span><span class='line'><span class="nt">&lt;/web-app&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lets try building our war file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">mbp:~/Dev/Listerly/listerly$</span> mvn package
-</span><span class='line'><span class="go">[BLAH BLAH BLAH...]</span>
-</span><span class='line'><span class="go">[INFO] ------------------------------------------------------------------------</span>
-</span><span class='line'><span class="go">[INFO] BUILD SUCCESS</span>
-</span><span class='line'><span class="go">[INFO] ------------------------------------------------------------------------</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Good so far. But there&rsquo;s not much we can do with this just yet. Let&rsquo;s first start with trying to run our war on a web server independently of AppEngine.</p>
-
-<p>Lets add the Jetty plugin to our <code>pom.xml</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'>  <span class="nt">&lt;build&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>org.eclipse.jetty<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>jetty-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;version&gt;</span>9.1.3.v20140225<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/build&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now try running the <code>mvn jetty:run</code> task</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">mbp:~/Dev/Listerly/listerly$</span> mvn package
-</span><span class='line'><span class="go">[BLAH BLAH BLAH...]</span>
-</span><span class='line'><span class="gp">mbp:~/Dev/Listerly/listerly$</span> mvn jetty:run
-</span><span class='line'><span class="go">[BLAH BLAH BLAH...]</span>
-</span><span class='line'><span class="go">[INFO] Started Jetty Server</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you try accessing your servlet at <code>localhost:8080/hi</code> you should see a positive result:
-<img src="/images/postimages/2/helloworld-jetty.png"></p>
-
-<p>Ok, lets move on to integrating appengine.</p>
-
-<p>Before we start, I&rsquo;m going to change my servlet a tiny bit just to be able to differentiate and make sure this is the version we&rsquo;re seeing. Change the appropriate line to <code>resp.getWriter().println("Hello, handrolled AppEngine!");</code></p>
-
-<p>Next, we need to create the <code>appengine-web.xml</code> (in <code>src/main/webapp/WEB-INF/</code>) that tells AppEngine what project and version</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
-</span><span class='line'><span class="nt">&lt;appengine-web-app</span> <span class="na">xmlns=</span><span class="s">&quot;http://appengine.google.com/ns/1.0&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;application&gt;</span>listerly-dev<span class="nt">&lt;/application&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;version&gt;</span>1<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;threadsafe&gt;</span>true<span class="nt">&lt;/threadsafe&gt;</span>
-</span><span class='line'><span class="nt">&lt;/appengine-web-app&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then we need to add a couple of items to our <code>pom.xml</code></p>
-
-<figure class='code'><figcaption><span>pom.xml - see lines 14-18 and 32-36</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-</span><span class='line'>  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>com.listerly<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>listerly-server<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;version&gt;</span>0.1<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;packaging&gt;</span>war<span class="nt">&lt;/packaging&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;name&gt;</span>Listerly Main Server<span class="nt">&lt;/name&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;url&gt;</span>http://www.listerly.com<span class="nt">&lt;/url&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;dependencies&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>com.google.appengine<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>appengine-api-1.0-sdk<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;version&gt;</span>1.9.0<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>servlet-api<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;version&gt;</span>2.5<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/dependencies&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;build&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>org.eclipse.jetty<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>jetty-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;version&gt;</span>9.1.3.v20140225<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>com.google.appengine<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>appengine-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.8.7<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/build&gt;</span>
-</span><span class='line'><span class="nt">&lt;/project&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
+<p>In <code>src/main/java/com/listerly/</code><br><figure class="highlight java"><figcaption><span>HelloWorldServlet.java</span><a href="/downloads/code/1/b/HelloWorldServlet.java">view raw</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.listerly;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"></span><br><span class="line"><span class="annotation">@SuppressWarnings</span>(<span class="string">"serial"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorldServlet</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span> </span>{</span><br><span class="line"></span><br><span class="line">	<span class="annotation">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span></span><br><span class="line">			<span class="keyword">throws</span> ServletException, IOException </span>{</span><br><span class="line">		resp.setContentType(<span class="string">"text/plain"</span>);</span><br><span class="line">		resp.getWriter().println(<span class="string">"Hello, my AppEngine"</span>);</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<p>In <code>src/main/webapp/WEB-INF</code><br><figure class="highlight xml"><figcaption><span>web.xml</span><a href="/downloads/code/1/b/web.xml">view raw</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="pi">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">web-app</span> <span class="attribute">version</span>=<span class="value">"2.5"</span> <span class="attribute">xmlns</span>=<span class="value">"http://java.sun.com/xml/ns/javaee"</span></span><br><span class="line"><span class="attribute">xmlns:xsi</span>=<span class="value">"http://www.w3.org/2001/XMLSchema-instance"</span></span><br><span class="line"><span class="attribute">xsi:schemaLocation</span>=<span class="value">"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">welcome-file-list</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">welcome-file</span>&gt;</span>index.html<span class="tag">&lt;/<span class="title">welcome-file</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">welcome-file-list</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">servlet</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="title">servlet-name</span>&gt;</span>HelloWorldServlet<span class="tag">&lt;/<span class="title">servlet-name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="title">servlet-class</span>&gt;</span>com.listerly.HelloWorldServlet<span class="tag">&lt;/<span class="title">servlet-class</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">servlet</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="title">servlet-mapping</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="title">servlet-name</span>&gt;</span>HelloWorldServlet<span class="tag">&lt;/<span class="title">servlet-name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="title">url-pattern</span>&gt;</span>/hi<span class="tag">&lt;/<span class="title">url-pattern</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">servlet-mapping</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Lets try building our war file:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mbp:~/Dev/Listerly/listerly$ mvn package&#10;[BLAH BLAH BLAH...]&#10;[INFO] ------------------------------------------------------------------------&#10;[INFO] BUILD SUCCESS&#10;[INFO] ------------------------------------------------------------------------</span><br></pre></td></tr></table></figure></p>
+<p>Good so far. But there’s not much we can do with this just yet. Let’s first start with trying to run our war on a web server independently of AppEngine. </p>
+<p>Lets add the Jetty plugin to our <code>pom.xml</code>:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">build</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">plugin</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.eclipse.jetty<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>jetty-maven-plugin<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">version</span>&gt;</span>9.1.3.v20140225<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">plugin</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="title">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">build</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Now try running the <code>mvn jetty:run</code> task<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mbp:~/Dev/Listerly/listerly$ mvn package&#10;[BLAH BLAH BLAH...]&#10;mbp:~/Dev/Listerly/listerly$ mvn jetty:run&#10;[BLAH BLAH BLAH...]&#10;[INFO] Started Jetty Server</span><br></pre></td></tr></table></figure></p>
+<p>If you try accessing your servlet at <code>localhost:8080/hi</code> you should see a positive result:<br><img src="/images/postimages/2/helloworld-jetty.png">    </p>
+<p>Ok, lets move on to integrating appengine. </p>
+<p>Before we start, I’m going to change my servlet a tiny bit just to be able to differentiate and make sure this is the version we’re seeing. Change the appropriate line to <code>resp.getWriter().println(&quot;Hello, handrolled AppEngine!&quot;);</code></p>
+<p>Next, we need to create the <code>appengine-web.xml</code> (in <code>src/main/webapp/WEB-INF/</code>) that tells AppEngine what project and version<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="pi">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">appengine-web-app</span> <span class="attribute">xmlns</span>=<span class="value">"http://appengine.google.com/ns/1.0"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">application</span>&gt;</span>listerly-dev<span class="tag">&lt;/<span class="title">application</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">version</span>&gt;</span>1<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">threadsafe</span>&gt;</span>true<span class="tag">&lt;/<span class="title">threadsafe</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">appengine-web-app</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Then we need to add a couple of items to our <code>pom.xml</code><br><figure class="highlight xml"><figcaption><span>pom.xml - see lines 14-18 and 32-36</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">project</span> <span class="attribute">xmlns</span>=<span class="value">"http://maven.apache.org/POM/4.0.0"</span> <span class="attribute">xmlns:xsi</span>=<span class="value">"http://www.w3.org/2001/XMLSchema-instance"</span></span><br><span class="line">  <span class="attribute">xsi:schemaLocation</span>=<span class="value">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="title">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.listerly<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>listerly-server<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">version</span>&gt;</span>0.1<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">packaging</span>&gt;</span>war<span class="tag">&lt;/<span class="title">packaging</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="title">name</span>&gt;</span>Listerly Main Server<span class="tag">&lt;/<span class="title">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">url</span>&gt;</span>http://www.listerly.com<span class="tag">&lt;/<span class="title">url</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="title">dependencies</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.google.appengine<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>appengine-api-1.0-sdk<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="title">version</span>&gt;</span>1.9.0<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">	  	<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">	  	<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>servlet-api<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">	  	<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.5<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="title">dependencies</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">plugins</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">plugin</span>&gt;</span></span><br><span class="line">		  <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.eclipse.jetty<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		  <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>jetty-maven-plugin<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		  <span class="tag">&lt;<span class="title">version</span>&gt;</span>9.1.3.v20140225<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="title">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.google.appengine<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>appengine-maven-plugin<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="title">version</span>&gt;</span>1.8.7<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="title">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">plugins</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="title">build</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="title">project</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>Now if we run <code>mvn appengine:devserver</code> and visit <code>http://localhost:8080/hi</code> we get something that looks good:</p>
-
-<p><img src="/images/postimages/2/helloworld-appengine1.png"></p>
-
-<p>Lets try pushing it to the Google servers. Run <code>mvn appengine:update</code> and if all goes well (it should!), open a browser to <code>http://[app-id].appspot.com/hi</code>. Uh oh. Doesn&rsquo;t say &ldquo;handrolled&rdquo; for me. Looks like it&rsquo;s still running the old version. Fortunately, this is to be expected because AppEngine allows you to upload multiple versions of your app, but only one of them is the &ldquo;default version&rdquo;. Lets make this version default. Visit <code>appengine.google.com</code>. Login, and then click on your application. In the left navigation bar you should see &ldquo;versions&rdquo;. Click there, and you&rsquo;ll see that you have two versions deployed: <code>1-war</code> that was created by the AppEngine archetype, and <code>1</code>, which is the version we just created. Select 1, and click make default. Now if you reload your other browser window, you should see &ldquo;Hello, handrolled AppEngine!&rdquo;. That&rsquo;s success for Part 2.</p>
-
-<p>You can choose which approach you prefer. I like the ability to have full control over my project structure so for the rest of this tutorial I&rsquo;m going to go with the second approach (which the more attentive may have guessed by the fact that this has all been done on the master branch though I claim that was accidental). Add everything into git (if you&rsquo;re going with this approach &ndash; otherwise discard everything and merge the other branch into master) and we&rsquo;ll be ready to go with <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Part 3</a>.</p>
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
-  
-
-<span class="byline author vcard">Posted by <span class="fn">Akshay Rangnekar</span></span>
+<img src="/images/postimages/2/helloworld-appengine1.png">    
+<p>Lets try pushing it to the Google servers. Run <code>mvn appengine:update</code> and if all goes well (it should!), open a browser to <code>http://[app-id].appspot.com/hi</code>. Uh oh. Doesn’t say “handrolled” for me. Looks like it’s still running the old version. Fortunately, this is to be expected because AppEngine allows you to upload multiple versions of your app, but only one of them is the “default version”. Lets make this version default. Visit <code>appengine.google.com</code>. Login, and then click on your application. In the left navigation bar you should see “versions”. Click there, and you’ll see that you have two versions deployed: <code>1-war</code> that was created by the AppEngine archetype, and <code>1</code>, which is the version we just created. Select 1, and click make default. Now if you reload your other browser window, you should see “Hello, handrolled AppEngine!”. That’s success for Part 2.</p>
+<p>You can choose which approach you prefer. I like the ability to have full control over my project structure so for the rest of this tutorial I’m going to go with the second approach (which the more attentive may have guessed by the fact that this has all been done on the master branch though I claim that was accidental). Add everything into git (if you’re going with this approach - otherwise discard everything and merge the other branch into master) and we’ll be ready to go with <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Part 3</a>.</p>
 
       
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-14T10:52:12+00:00" pubdate data-updated="true">Mar 14<span>th</span>, 2014</time>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://akshayrangnekar.github.io//blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/" data-id="ci8o7rbd20015s19yyd04782f" class="article-share-link">Share</a>
       
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AppEngine/">AppEngine</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Maven/">Maven</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
 
-<span class="categories">
+    </footer>
+  </div>
   
-    <a class='category' href='/blog/categories/appengine/'>AppEngine</a>, <a class='category' href='/blog/categories/java/'>Java</a>, <a class='category' href='/blog/categories/maven/'>Maven</a>, <a class='category' href='/blog/categories/git/'>git</a>
-  
-</span>
-
-
-    </p>
     
-      <div class="sharing">
+<nav id="article-nav">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://akshayrangnekar.github.io/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/" data-via="akshayr" data-counturl="http://akshayrangnekar.github.io/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/" >Tweet</a>
+    <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Up and running on AppEngine with Maven, Jersey and Guice - Part 3
+        
+      </div>
+    </a>
   
   
+    <a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Up and running on AppEngine with Maven, Jersey and Guice - Part 1</div>
+    </a>
   
-    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
-  
-</div>
+</nav>
 
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/" title="Previous Post: Up and running on AppEngine with Maven, Jersey and Guice - Part 1">&laquo; Up and running on AppEngine with Maven, Jersey and Guice - Part 1</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/" title="Next Post: Up and running on AppEngine with Maven, Jersey and Guice - Part 3">Up and running on AppEngine with Maven, Jersey and Guice - Part 3 &raquo;</a>
-      
-    </p>
-  </footer>
+  
 </article>
 
-</div>
-
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 5</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 4</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 3</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 2</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 1</a>
-      </li>
-    
-  </ul>
 </section>
-
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
-  </ul>
+        
+          <aside id="sidebar">
   
-  <a href="https://github.com/akshayrangnekar">@akshayrangnekar</a> on GitHub
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/AppEngine/">AppEngine</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/Server/">Server</a><span class="category-list-count">1</span></li></ul></li></ul>
+    </div>
+  </div>
+
   
-  <script type="text/javascript">
-    $(document).ready(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AppEngine/">AppEngine</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Freemarker/">Freemarker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Guice/">Guice</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/">Hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JPA/">JPA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Jersey/">Jersey</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/">Maven</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
 
-        github.showRepos({
-            user: 'akshayrangnekar',
-            count: 1,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AppEngine/" style="font-size: 20px;">AppEngine</a><a href="/tags/Freemarker/" style="font-size: 10px;">Freemarker</a><a href="/tags/Guice/" style="font-size: 12.5px;">Guice</a><a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a><a href="/tags/JPA/" style="font-size: 10px;">JPA</a><a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Jersey/" style="font-size: 15px;">Jersey</a><a href="/tags/Maven/" style="font-size: 17.5px;">Maven</a><a href="/tags/git/" style="font-size: 12.5px;">git</a><a href="/tags/github/" style="font-size: 10px;">github</a>
+    </div>
+  </div>
 
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a><span class="archive-list-count">5</span></li></ul>
+    </div>
+  </div>
 
-
-<section class="googleplus googleplus-hidden">
-  <h1>
-    <a href="https://plus.google.com/akshay.rangnekar@gmail.com?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
-      Google+
-    </a>
-  </h1>
-</section>
-
-
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/blog/2015/04/19/moving-to-hexo/">Moving to Hexo</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/">Up and running on AppEngine with Maven, Jersey and Guice - Part 5</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/">Up and running on AppEngine with Maven, Jersey and Guice - Part 4</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Up and running on AppEngine with Maven, Jersey and Guice - Part 3</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Up and running on AppEngine with Maven, Jersey and Guice - Part 2</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
 
   
 </aside>
-
-
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 Akshay Rangnekar<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - Akshay Rangnekar -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
 </footer>
+    </div>
+    <nav id="mobile-nav">
   
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
 
-
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id; js.async = true;
-  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
 
 
+<script src="/js/script.js" type="text/javascript"></script>
 
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
-
-
-
+  </div>
 </body>
 </html>

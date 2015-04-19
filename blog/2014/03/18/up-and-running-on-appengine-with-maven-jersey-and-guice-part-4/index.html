@@ -1,603 +1,250 @@
-
 <!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<html>
 <head>
   <meta charset="utf-8">
-  <title>Up and Running on AppEngine With Maven, Jersey and Guice - Part 4 - Akshay's Programming Blog</title>
-  <meta name="author" content="Akshay Rangnekar">
-
   
-  <meta name="description" content="This is part four of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice. Part 3 got us working with &hellip;">
+  <title>Up and running on AppEngine with Maven, Jersey and Guice - Part 4 | Development Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="This is part four of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.
+Part 3 got us working with Jersey and Guice. Part 4 will make Jersey more use">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Up and running on AppEngine with Maven, Jersey and Guice - Part 4">
+<meta property="og:url" content="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/index.html">
+<meta property="og:site_name" content="Development Notes">
+<meta property="og:description" content="This is part four of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.
+Part 3 got us working with Jersey and Guice. Part 4 will make Jersey more use">
+<meta property="og:image" content="/images/postimages/4/heyJson.png">
+<meta property="og:image" content="/images/postimages/4/heyTemplate.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Up and running on AppEngine with Maven, Jersey and Guice - Part 4">
+<meta name="twitter:description" content="This is part four of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.
+Part 3 got us working with Jersey and Guice. Part 4 will make Jersey more use">
   
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <link rel="alternative" href="/atom.xml" title="Development Notes" type="application/atom+xml">
   
-  <link rel="canonical" href="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Akshay's Programming Blog" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<!-- <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
-<link href='//fonts.googleapis.com/css?family=Droid+Sans|Raleway:900' rel='stylesheet' type='text/css'>
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
   
 
 </head>
-
-<body   >
-  <header role="banner"><hgroup>
-    <img class="left" src="http://www.gravatar.com/avatar/712764174a1641db425b971456e63015?r=x&s=700" width="50" height="50" title="me" alt="me">
-  <h1><a href="/">Akshay's Programming Blog</a></h1>
-  
-    <h2>Notes on Coding</h2>
-  
-</hgroup>
-
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Development Notes</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Akshay Rangnekar</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="q" value="site:http://akshayrangnekar.github.io"></form>
+      </div>
+    </div>
+  </div>
 </header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="https://www.google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:akshayrangnekar.github.io" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
-</nav>
-  <div id="main">
-    <div id="content">
-      <div>
-<article class="hentry" role="article">
-  
-  <header>
+      <div class="outer">
+        <section id="main"><article id="post-up-and-running-on-appengine-with-maven-jersey-and-guice-part-4" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/" class="article-date">
+  <time datetime="2014-03-18T15:42:52.000Z" itemprop="datePublished">2014-03-18</time>
+</a>
     
-      <h1 class="entry-title">Up and Running on AppEngine With Maven, Jersey and Guice - Part 4</h1>
+  </div>
+  <div class="article-inner">
     
     
-      <p class="meta">
+      <header class="article-header">
         
-
-
-
-
-
-
-
-
+  
+    <h1 class="article-title" itemprop="name">
+      Up and running on AppEngine with Maven, Jersey and Guice - Part 4
+    </h1>
   
 
-
-<time datetime="2014-03-18T15:42:52+00:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
-        
-      </p>
+      </header>
     
-  </header>
-
-
-<div class="entry-content"><p>This is part four of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.</p>
-
-<p><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Part 3</a> got us working with Jersey and Guice. Part 4 will make Jersey more useful by adding JSON and freemarker templates.</p>
-
-<!-- more -->
-
-
-<p>While our Jersey POJOs are nicely returning String messages at the moment, that&rsquo;s really not particularly useful in the real world. Most apps that I build are going to return one of three things &ndash; static files (which are already easily handled), HTML, or JSON. For HTML, I&rsquo;ve chosen to use Freemarker templates, which Jersey supports JSON as long as you give it serialization libraries.</p>
-
-<h2>Getting JSON working</h2>
-
-<p>Getting JSON working is actually fairly simple. First, lets make sure that we&rsquo;re importing the Jackson library which works has a JAXRS provider that Jersey uses:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'>  <span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>com.fasterxml.jackson.core<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>jackson-annotations<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;version&gt;</span>2.2.0<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>com.fasterxml.jackson.core<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>jackson-core<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;version&gt;</span>2.2.0<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>com.fasterxml.jackson.core<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>jackson-databind<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;version&gt;</span>2.2.0<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>com.fasterxml.jackson.jaxrs<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>jackson-jaxrs-json-provider<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;version&gt;</span>2.2.0<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/dependency&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then, we simply create a new method in our Resource:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@GET</span>
-</span><span class='line'><span class="nd">@Produces</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
-</span><span class='line'><span class="nd">@Path</span><span class="o">(</span><span class="s">&quot;/json&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="n">Object</span> <span class="nf">json</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">SimpleReturnObject</span> <span class="n">ret</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleReturnObject</span><span class="o">();</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="n">ret</span><span class="o">.</span><span class="na">setFruit</span><span class="o">(</span><span class="s">&quot;Apple&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">ret</span><span class="o">.</span><span class="na">setHome</span><span class="o">(</span><span class="s">&quot;Hong Kong&quot;</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">return</span> <span class="n">ret</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>@Produces</code> annotation is enough to tell Jersey to use Jackson to serialize the data. We can then return any Object and the JSON representation will be sent down. Here&rsquo;s my very simple return object:</p>
-
-<figure class='code'><figcaption><span> (SimpleReturnObject.java)</span> <a href='/downloads/code/4/SimpleReturnObject.java'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">api</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SimpleReturnObject</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">fruit</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">home</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getFruit</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">fruit</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFruit</span><span class="o">(</span><span class="n">String</span> <span class="n">fruit</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">fruit</span> <span class="o">=</span> <span class="n">fruit</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getHome</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">home</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setHome</span><span class="o">(</span><span class="n">String</span> <span class="n">home</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">home</span> <span class="o">=</span> <span class="n">home</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>This is part four of my post on getting a web application up and running on Google AppEngine with Maven, Jersey and Guice.</p>
+<p><a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Part 3</a> got us working with Jersey and Guice. Part 4 will make Jersey more useful by adding JSON and freemarker templates.<br><a id="more"></a><br>While our Jersey POJOs are nicely returning String messages at the moment, that’s really not particularly useful in the real world. Most apps that I build are going to return one of three things - static files (which are already easily handled), HTML, or JSON. For HTML, I’ve chosen to use Freemarker templates, which Jersey supports JSON as long as you give it serialization libraries.</p>
+<h2 id="Getting_JSON_working">Getting JSON working</h2><p>Getting JSON working is actually fairly simple. First, lets make sure that we’re importing the Jackson library which works has a JAXRS provider that Jersey uses:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>jackson-annotations<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.2.0<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>jackson-core<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.2.0<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>jackson-databind<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.2.0<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.fasterxml.jackson.jaxrs<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>jackson-jaxrs-json-provider<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.2.0<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Then, we simply create a new method in our Resource:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@GET</span></span><br><span class="line"><span class="annotation">@Produces</span>(MediaType.APPLICATION_JSON)</span><br><span class="line"><span class="annotation">@Path</span>(<span class="string">"/json"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">json</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	SimpleReturnObject ret = <span class="keyword">new</span> SimpleReturnObject();</span><br><span class="line">	</span><br><span class="line">	ret.setFruit(<span class="string">"Apple"</span>);</span><br><span class="line">	ret.setHome(<span class="string">"Hong Kong"</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>The <code>@Produces</code> annotation is enough to tell Jersey to use Jackson to serialize the data. We can then return any Object and the JSON representation will be sent down. Here’s my very simple return object:<br><figure class="highlight java"><figcaption><span>SimpleReturnObject.java</span><a href="/downloads/code/4/SimpleReturnObject.java">view raw</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.listerly.api;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleReturnObject</span> </span>{</span><br><span class="line">	<span class="keyword">private</span> String fruit;</span><br><span class="line">	<span class="keyword">private</span> String home;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getFruit</span><span class="params">()</span> </span>{</span><br><span class="line">		<span class="keyword">return</span> fruit;</span><br><span class="line">	}</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFruit</span><span class="params">(String fruit)</span> </span>{</span><br><span class="line">		<span class="keyword">this</span>.fruit = fruit;</span><br><span class="line">	}</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getHome</span><span class="params">()</span> </span>{</span><br><span class="line">		<span class="keyword">return</span> home;</span><br><span class="line">	}</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setHome</span><span class="params">(String home)</span> </span>{</span><br><span class="line">		<span class="keyword">this</span>.home = home;</span><br><span class="line">	}</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
 <p>When we access the <code>/Hey/json</code> path, we get exactly what we would want. This works for as simple or complex as you want. If Jackson can handle them (and it can handle most things), you can return them.</p>
-
-<p><img src="/images/postimages/4/heyJson.png"></p>
-
-<h2>Getting Freemarker working</h2>
-
-<p>Phew. After the miserale nightmare involved in getting Jersey working, it&rsquo;s nice that JSON was so easy. Since we&rsquo;ve already included some of the Freemarker libraries in the POM in Part 3, hopefully Freemarker will be too.</p>
-
-<p>The first thing I noticed when trying to get Freemarker working was a compile error when trying to define a <code>Map&lt;String, Object&gt;</code>. Clearly I had forgotten to do some housekeeping in my POM so we were using an ancient version of Java. Add the compiler configuration to your POM to compile to Java 1.7 (Java 7). AppEngine is happy with classes compiled against that target version.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;version&gt;</span>3.1<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;source&gt;</span>1.7<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;target&gt;</span>1.7<span class="nt">&lt;/target&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, as I mentioned in Part 2, I like to keep my templates in their own <code>src</code> directory. You don&rsquo;t have to do this &ndash; you can put them in <code>src/main/resources</code> if you like, but I don&rsquo;t like to mix my properties files and persistence.xml (which will come in Part 5) with templates which are very different types of files. So I simply tell Maven that I have a second resource directory, in <code>src/main/templates</code>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;resources&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;resource&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;directory&gt;</span>/Users/akshay/Dev/Listerly/listerly/src/main/resources<span class="nt">&lt;/directory&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/resource&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;resource&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;directory&gt;</span>/Users/akshay/Dev/Listerly/listerly/src/main/templates<span class="nt">&lt;/directory&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/resource&gt;</span>
-</span><span class='line'><span class="nt">&lt;/resources&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, we need to create a class that will load our templates from the ServletContext or Classpath. Here&rsquo;s a simple implementation:</p>
-
-<figure class='code'><figcaption><span> (TemplateObjectFactory.java)</span> <a href='/downloads/code/4/TemplateObjectFactory.java'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">listerly</span><span class="o">.</span><span class="na">config</span><span class="o">.</span><span class="na">jersey</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">javax.inject.Inject</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.ServletContext</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">com.google.common.collect.Lists</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">freemarker.cache.ClassTemplateLoader</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">freemarker.cache.MultiTemplateLoader</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">freemarker.cache.TemplateLoader</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">freemarker.cache.WebappTemplateLoader</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">freemarker.template.Configuration</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TemplateObjectFactory</span> <span class="kd">extends</span> <span class="n">Configuration</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Inject</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">ServletContext</span> <span class="n">servletContext</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">TemplateObjectFactory</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="c1">// Create different loaders.</span>
-</span><span class='line'>        <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">TemplateLoader</span><span class="o">&gt;</span> <span class="n">loaders</span> <span class="o">=</span> <span class="n">Lists</span><span class="o">.</span><span class="na">newArrayList</span><span class="o">();</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">servletContext</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">loaders</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">WebappTemplateLoader</span><span class="o">(</span><span class="n">servletContext</span><span class="o">));</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="n">loaders</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">ClassTemplateLoader</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">(),</span> <span class="s">&quot;/&quot;</span><span class="o">));</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">setTemplateLoader</span><span class="o">(</span><span class="k">new</span> <span class="n">MultiTemplateLoader</span><span class="o">(</span><span class="n">loaders</span><span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="k">new</span> <span class="n">TemplateLoader</span><span class="o">[</span><span class="n">loaders</span><span class="o">.</span><span class="na">size</span><span class="o">()])));</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally, we need to configure Jersey to use this new class. In our JerseyConfiguration class constructor we set a parameter called <code>jersey.config.server.mvc.factory.freemarker</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Inject</span>
-</span><span class='line'><span class="kd">public</span> <span class="nf">JerseyConfiguration</span><span class="o">(</span><span class="n">ServiceLocator</span> <span class="n">serviceLocator</span><span class="o">,</span> <span class="n">ServletContext</span> <span class="n">servletContext</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&quot;Creating JerseyConfiguration&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">packages</span><span class="o">(</span><span class="s">&quot;com.listerly.resources&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">property</span><span class="o">(</span><span class="s">&quot;jersey.config.server.mvc.factory.freemarker&quot;</span><span class="o">,</span> <span class="n">TemplateObjectFactory</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">register</span><span class="o">(</span><span class="n">FreemarkerMvcFeature</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">GuiceBridge</span><span class="o">.</span><span class="na">getGuiceBridge</span><span class="o">().</span><span class="na">initializeGuiceBridge</span><span class="o">(</span><span class="n">serviceLocator</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">GuiceIntoHK2Bridge</span> <span class="n">guiceBridge</span> <span class="o">=</span> <span class="n">serviceLocator</span><span class="o">.</span><span class="na">getService</span><span class="o">(</span><span class="n">GuiceIntoHK2Bridge</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">guiceBridge</span><span class="o">.</span><span class="na">bridgeGuiceInjector</span><span class="o">((</span><span class="n">Injector</span><span class="o">)</span> <span class="n">servletContext</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">Injector</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()));</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We should be all set. Let&rsquo;s create another method in our Resource. This one returns HTML, and notice how we specify the template using the <code>@Template</code> annotation. Notice also that the return type from this method is a Map of Strings to Objects. These are the objects that will then be available in our Freemarker template. For simplicity, I&rsquo;ve just added two Strings to my Map. The first is called <code>foo</code> and the second <code>bar</code>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@GET</span>
-</span><span class='line'><span class="nd">@Produces</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_HTML</span><span class="o">)</span>
-</span><span class='line'><span class="nd">@Path</span><span class="o">(</span><span class="s">&quot;/template&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="nd">@Template</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;/foo.ftl&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">template</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
-</span><span class='line'>  <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;foo&quot;</span><span class="o">,</span> <span class="s">&quot;Akshay&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;bar&quot;</span><span class="o">,</span> <span class="s">&quot;Yo Yo Whatsup?&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">map</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now we create the <code>foo.ftl</code> template. Notice how easy it is to use the <code>foo</code> and <code>bar</code> parameters we <em>&ldquo;passed in&rdquo;</em> from our Resource.</p>
-
-<figure class='code'><figcaption><span>foo.ftl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;head&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;title&gt;</span>Hello ${foo}<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
-</span><span class='line'>      You wanted to say ${bar}
-</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
+<img src="/images/postimages/4/heyJson.png">    
+<h2 id="Getting_Freemarker_working">Getting Freemarker working</h2><p>Phew. After the miserale nightmare involved in getting Jersey working, it’s nice that JSON was so easy. Since we’ve already included some of the Freemarker libraries in the POM in Part 3, hopefully Freemarker will be too.</p>
+<p>The first thing I noticed when trying to get Freemarker working was a compile error when trying to define a <code>Map&lt;String, Object&gt;</code>. Clearly I had forgotten to do some housekeeping in my POM so we were using an ancient version of Java. Add the compiler configuration to your POM to compile to Java 1.7 (Java 7). AppEngine is happy with classes compiled against that target version.<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">plugin</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>maven-compiler-plugin<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">version</span>&gt;</span>3.1<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">source</span>&gt;</span>1.7<span class="tag">&lt;/<span class="title">source</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">target</span>&gt;</span>1.7<span class="tag">&lt;/<span class="title">target</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="title">configuration</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Next, as I mentioned in Part 2, I like to keep my templates in their own <code>src</code> directory. You don’t have to do this - you can put them in <code>src/main/resources</code> if you like, but I don’t like to mix my properties files and persistence.xml (which will come in Part 5) with templates which are very different types of files. So I simply tell Maven that I have a second resource directory, in <code>src/main/templates</code>.<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">resources</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">resource</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">directory</span>&gt;</span>/Users/akshay/Dev/Listerly/listerly/src/main/resources<span class="tag">&lt;/<span class="title">directory</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="title">resource</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">resource</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">directory</span>&gt;</span>/Users/akshay/Dev/Listerly/listerly/src/main/templates<span class="tag">&lt;/<span class="title">directory</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="title">resource</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">resources</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Next, we need to create a class that will load our templates from the ServletContext or Classpath. Here’s a simple implementation:<br><figure class="highlight java"><figcaption><span>TemplateObjectFactory.java</span><a href="/downloads/code/4/TemplateObjectFactory.java">view raw</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.listerly.config.jersey;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.inject.Inject;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletContext;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.google.common.collect.Lists;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> freemarker.cache.ClassTemplateLoader;</span><br><span class="line"><span class="keyword">import</span> freemarker.cache.MultiTemplateLoader;</span><br><span class="line"><span class="keyword">import</span> freemarker.cache.TemplateLoader;</span><br><span class="line"><span class="keyword">import</span> freemarker.cache.WebappTemplateLoader;</span><br><span class="line"><span class="keyword">import</span> freemarker.template.Configuration;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TemplateObjectFactory</span> <span class="keyword">extends</span> <span class="title">Configuration</span> </span>{</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Inject</span></span><br><span class="line">    <span class="keyword">private</span> ServletContext servletContext;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TemplateObjectFactory</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="comment">// Create different loaders.</span></span><br><span class="line">        <span class="keyword">final</span> List&lt;TemplateLoader&gt; loaders = Lists.newArrayList();</span><br><span class="line">        <span class="keyword">if</span> (servletContext != <span class="keyword">null</span>) {</span><br><span class="line">            loaders.add(<span class="keyword">new</span> WebappTemplateLoader(servletContext));</span><br><span class="line">        }</span><br><span class="line">        loaders.add(<span class="keyword">new</span> ClassTemplateLoader(<span class="keyword">this</span>.getClass(), <span class="string">"/"</span>));</span><br><span class="line"></span><br><span class="line">        setTemplateLoader(<span class="keyword">new</span> MultiTemplateLoader(loaders.toArray(<span class="keyword">new</span> TemplateLoader[loaders.size()])));</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<p>Finally, we need to configure Jersey to use this new class. In our JerseyConfiguration class constructor we set a parameter called <code>jersey.config.server.mvc.factory.freemarker</code>:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@Inject</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">JerseyConfiguration</span><span class="params">(ServiceLocator serviceLocator, ServletContext servletContext)</span> </span>&#123;</span><br><span class="line">	log.info(<span class="string">"Creating JerseyConfiguration"</span>);</span><br><span class="line">    packages(<span class="string">"com.listerly.resources"</span>);</span><br><span class="line">    property(<span class="string">"jersey.config.server.mvc.factory.freemarker"</span>, TemplateObjectFactory.class);</span><br><span class="line">    register(FreemarkerMvcFeature.class);</span><br><span class="line"></span><br><span class="line">    GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);</span><br><span class="line">    GuiceIntoHK2Bridge guiceBridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);</span><br><span class="line">    guiceBridge.bridgeGuiceInjector((Injector) servletContext.getAttribute(Injector.class.getName()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>We should be all set. Let’s create another method in our Resource. This one returns HTML, and notice how we specify the template using the <code>@Template</code> annotation. Notice also that the return type from this method is a Map of Strings to Objects. These are the objects that will then be available in our Freemarker template. For simplicity, I’ve just added two Strings to my Map. The first is called <code>foo</code> and the second <code>bar</code>.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@GET</span></span><br><span class="line"><span class="annotation">@Produces</span>(MediaType.TEXT_HTML)</span><br><span class="line"><span class="annotation">@Path</span>(<span class="string">"/template"</span>)</span><br><span class="line"><span class="annotation">@Template</span>(name=<span class="string">"/foo.ftl"</span>)</span><br><span class="line"><span class="keyword">public</span> Map&lt;String, Object&gt; template() &#123;</span><br><span class="line">	Map&lt;String, Object&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">	map.put(<span class="string">"foo"</span>, <span class="string">"Akshay"</span>);</span><br><span class="line">	map.put(<span class="string">"bar"</span>, <span class="string">"Yo Yo Whatsup?"</span>);</span><br><span class="line">	<span class="keyword">return</span> map;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Now we create the <code>foo.ftl</code> template. Notice how easy it is to use the <code>foo</code> and <code>bar</code> parameters we <em>“passed in”</em> from our Resource.<br><figure class="highlight html"><figcaption><span>foo.ftl</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="doctype">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">html</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">head</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">title</span>&gt;</span>Hello $&#123;foo&#125;<span class="tag">&lt;/<span class="title">title</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">head</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">body</span>&gt;</span></span><br><span class="line">		You wanted to say $&#123;bar&#125;</span><br><span class="line">	<span class="tag">&lt;/<span class="title">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">html</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>Launch the devserver and load this url (<code>/Hey/template</code>) in your browser, and you should see exactly what you would want.</p>
-
-<p><img src="/images/postimages/4/heyTemplate.png"></p>
-
-<p>Obviously there&rsquo;s a ton more you can do with Freemarker. The parameters in the map can be Collections objects and you can use Freemarkers logical constructs to loop or check for truth/ existence among other things. But those you can pick up quite easily from the <a href="http://freemarker.org/docs/index.html">Freemarker Manual</a>.</p>
-
-<p>That&rsquo;s it for Part 4. <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/">Part 5</a> will do the final piece (of this tutorial) of getting persistence configured using JPA.</p>
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
-  
-
-<span class="byline author vcard">Posted by <span class="fn">Akshay Rangnekar</span></span>
+<img src="/images/postimages/4/heyTemplate.png">    
+<p>Obviously there’s a ton more you can do with Freemarker. The parameters in the map can be Collections objects and you can use Freemarkers logical constructs to loop or check for truth/ existence among other things. But those you can pick up quite easily from the <a href="http://freemarker.org/docs/index.html" target="_blank" rel="external">Freemarker Manual</a>.</p>
+<p>That’s it for Part 4. <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/">Part 5</a> will do the final piece (of this tutorial) of getting persistence configured using JPA.</p>
 
       
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-18T15:42:52+00:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://akshayrangnekar.github.io//blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/" data-id="ci8o7rbcu000ss19y3pnqiezx" class="article-share-link">Share</a>
       
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AppEngine/">AppEngine</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Freemarker/">Freemarker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Jersey/">Jersey</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Maven/">Maven</a></li></ul>
 
-<span class="categories">
+    </footer>
+  </div>
   
-    <a class='category' href='/blog/categories/appengine/'>AppEngine</a>, <a class='category' href='/blog/categories/freemarker/'>Freemarker</a>, <a class='category' href='/blog/categories/java/'>Java</a>, <a class='category' href='/blog/categories/jersey/'>Jersey</a>, <a class='category' href='/blog/categories/maven/'>Maven</a>
-  
-</span>
-
-
-    </p>
     
-      <div class="sharing">
+<nav id="article-nav">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/" data-via="akshayr" data-counturl="http://akshayrangnekar.github.io/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/" >Tweet</a>
+    <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Up and running on AppEngine with Maven, Jersey and Guice - Part 5
+        
+      </div>
+    </a>
   
   
+    <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Up and running on AppEngine with Maven, Jersey and Guice - Part 3</div>
+    </a>
   
-    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
-  
-</div>
+</nav>
 
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/" title="Previous Post: Up and running on AppEngine with Maven, Jersey and Guice - Part 3">&laquo; Up and running on AppEngine with Maven, Jersey and Guice - Part 3</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/" title="Next Post: Up and running on AppEngine with Maven, Jersey and Guice - Part 5">Up and running on AppEngine with Maven, Jersey and Guice - Part 5 &raquo;</a>
-      
-    </p>
-  </footer>
+  
 </article>
 
-</div>
-
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 5</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 4</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 3</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 2</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/13/up-and-running-on-appengine-with-maven-jersey-and-guice/">Up and Running on AppEngine With Maven, Jersey and Guice - Part 1</a>
-      </li>
-    
-  </ul>
 </section>
-
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
-  </ul>
+        
+          <aside id="sidebar">
   
-  <a href="https://github.com/akshayrangnekar">@akshayrangnekar</a> on GitHub
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/AppEngine/">AppEngine</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/Server/">Server</a><span class="category-list-count">1</span></li></ul></li></ul>
+    </div>
+  </div>
+
   
-  <script type="text/javascript">
-    $(document).ready(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AppEngine/">AppEngine</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Freemarker/">Freemarker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Guice/">Guice</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/">Hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JPA/">JPA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Jersey/">Jersey</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/">Maven</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
 
-        github.showRepos({
-            user: 'akshayrangnekar',
-            count: 1,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AppEngine/" style="font-size: 20px;">AppEngine</a><a href="/tags/Freemarker/" style="font-size: 10px;">Freemarker</a><a href="/tags/Guice/" style="font-size: 12.5px;">Guice</a><a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a><a href="/tags/JPA/" style="font-size: 10px;">JPA</a><a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Jersey/" style="font-size: 15px;">Jersey</a><a href="/tags/Maven/" style="font-size: 17.5px;">Maven</a><a href="/tags/git/" style="font-size: 12.5px;">git</a><a href="/tags/github/" style="font-size: 10px;">github</a>
+    </div>
+  </div>
 
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a><span class="archive-list-count">5</span></li></ul>
+    </div>
+  </div>
 
-
-<section class="googleplus googleplus-hidden">
-  <h1>
-    <a href="https://plus.google.com/akshay.rangnekar@gmail.com?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
-      Google+
-    </a>
-  </h1>
-</section>
-
-
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/blog/2015/04/19/moving-to-hexo/">Moving to Hexo</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-5/">Up and running on AppEngine with Maven, Jersey and Guice - Part 5</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-4/">Up and running on AppEngine with Maven, Jersey and Guice - Part 4</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/03/18/up-and-running-on-appengine-with-maven-jersey-and-guice-part-3/">Up and running on AppEngine with Maven, Jersey and Guice - Part 3</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/03/14/up-and-running-on-appengine-with-maven-jersey-and-guice-part-2/">Up and running on AppEngine with Maven, Jersey and Guice - Part 2</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
 
   
 </aside>
-
-
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 Akshay Rangnekar<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - Akshay Rangnekar -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
 </footer>
+    </div>
+    <nav id="mobile-nav">
   
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
 
-
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id; js.async = true;
-  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
 
 
+<script src="/js/script.js" type="text/javascript"></script>
 
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
-
-
-
+  </div>
 </body>
 </html>
