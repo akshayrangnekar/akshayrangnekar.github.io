@@ -1,0 +1,63 @@
+// Include gulp
+var gulp = require('gulp');
+var stylus = require('gulp-stylus');
+var concat = require('gulp-concat');
+var inject = require('gulp-inject');
+var del = require('del');
+var bowerFiles = require('main-bower-files')
+    bower = require('gulp-bower');
+var angularFilesort = require('gulp-angular-filesort'),
+    ngAnnotate = require('gulp-ng-annotate');
+
+
+var config = {
+    appPath: './app',
+    bowerDir: './bower_components' 
+}
+
+gulp.task('copy:styl', function() {
+  return gulp.src('src/styl/main.styl')
+    .pipe(stylus())
+    .pipe(gulp.dest(config.appPath + '/css'))
+});
+
+gulp.task('copy:html', function() {
+  return gulp.src('src/html/**/*.html')
+    .pipe(gulp.dest(config.appPath))
+});
+
+gulp.task('copy:scripts', function() {
+  return gulp.src('src/scripts/**/*.js')
+    .pipe(ngAnnotate())
+    .pipe(gulp.dest(config.appPath + '/scripts'))
+});
+
+gulp.task('copy:bower', ['bower'], function() {
+  return gulp.src(config.bowerDir + '/**/*.*')
+    .pipe(gulp.dest(config.appPath + '/bower_components'))
+});
+
+gulp.task('bower', function() {
+    return bower()
+        .pipe(gulp.dest(config.bowerDir)) ;
+});
+
+gulp.task('clean', function (cb) {
+  del([
+    config.appPath + '/**'
+  ], cb);
+});
+
+gulp.task('build', ['copy:bower', 'copy:scripts', 'copy:styl', 'copy:html'], function () {
+  var target = gulp.src(config.appPath + '/index.html');
+  // It's not necessary to read the files (will speed up things), we're only after their paths:
+  var sources = gulp.src([config.appPath + '/css/**/*.css'], {read: false});
+
+  return target.pipe(inject(sources, {ignorePath: 'app', relative: true}))
+        .pipe(inject(gulp.src(bowerFiles(), {read: false}), {name: 'bower'}))
+        .pipe(inject(gulp.src(config.appPath + '/scripts/**/*.js') // gulp-angular-filesort depends on file contents, so don't use {read: false} here
+            .pipe(angularFilesort())))
+        .pipe(gulp.dest(config.appPath));
+});
+
+gulp.task('default', ['build']);
